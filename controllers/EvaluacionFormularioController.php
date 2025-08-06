@@ -315,4 +315,148 @@ class EvaluacionFormularioController extends ActiveRecord
             ]);
         }
     }
+
+
+
+
+
+
+
+    public static function obtenerPafesEvaluadoAPI()
+{
+    getHeadersApi();
+    try {
+        $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+        $anio_actual = 2025; // Año fijo según requerimientos
+        $mes_actual = 8; // Agosto
+        
+        // Calcular los últimos 4 meses
+        $meses = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $mes = $mes_actual - $i;
+            $anio = $anio_actual;
+            
+            // Ajustar si el mes es menor a 1 (año anterior)
+            if ($mes <= 0) {
+                $mes += 12;
+                $anio--;
+            }
+            
+            $meses[] = [
+                'mes' => str_pad($mes, 2, '0', STR_PAD_LEFT),
+                'anio' => $anio,
+                'nombre' => self::obtenerNombreMes($mes)
+            ];
+        }
+
+        $evaluaciones = [];
+        $puntajes = [];
+
+        // Consultar cada mes
+        foreach ($meses as $index => $periodo) {
+            $fecha_inicio = "{$periodo['anio']}-{$periodo['mes']}-01";
+            $fecha_fin = "{$periodo['anio']}-{$periodo['mes']}-31";
+
+            $sql = "SELECT not_promedio, not_fecha 
+                    FROM opaf_notas 
+                    WHERE not_catalogo = {$catalogo} 
+                    AND not_fecha >= '{$fecha_inicio}' 
+                    AND not_fecha <= '{$fecha_fin}'
+                    ORDER BY not_fecha DESC 
+                    LIMIT 1";
+
+            $resultado = self::fetchArray($sql);
+
+            if (!empty($resultado)) {
+                $puntaje = (int) $resultado[0]['not_promedio'];
+                $evaluaciones[] = [
+                    'mes' => $periodo['nombre'],
+                    'puntaje' => $puntaje,
+                    'fecha' => $resultado[0]['not_fecha']
+                ];
+                $puntajes[] = $puntaje;
+            } else {
+                // No hay PAFE en este mes
+                $evaluaciones[] = [
+                    'mes' => $periodo['nombre'],
+                    'puntaje' => 0,
+                    'fecha' => null
+                ];
+                $puntajes[] = 0;
+            }
+        }
+
+        // Calcular promedio
+        $promedio = array_sum($puntajes) / 4;
+        
+        // Determinar rango de puntos PAFE
+        $puntos_pafe = self::calcularPuntosPafe($promedio);
+
+        $respuesta = [
+            'evaluaciones' => $evaluaciones,
+            'puntajes' => $puntajes, // [eva1, eva2, eva3, eva4]
+            'promedio' => round($promedio, 2),
+            'puntos_pafe' => $puntos_pafe,
+            'rango_texto' => self::obtenerTextoRango($puntos_pafe),
+            'meses_consultados' => array_column($meses, 'nombre')
+        ];
+
+        http_response_code(200);
+        echo json_encode([
+            'codigo' => 1,
+            'mensaje' => 'Evaluaciones PAFE obtenidas correctamente',
+            'data' => $respuesta
+        ]);
+
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'codigo' => 0,
+            'mensaje' => 'Error al obtener evaluaciones PAFE',
+            'detalle' => $e->getMessage()
+        ]);
+    }
+}
+
+
+ // Calcular puntos PAFE según el promedio
+
+private static function calcularPuntosPafe($promedio)
+{
+    if ($promedio >= 91) return 5;
+    if ($promedio >= 81) return 4;
+    if ($promedio >= 71) return 3;
+    if ($promedio >= 60) return 2;
+    return 0;
+}
+
+
+  //Obtener texto descriptivo del rango
+
+private static function obtenerTextoRango($puntos)
+{
+    $rangos = [
+        0 => 'De 0 a 59 puntos',
+        2 => 'De 60 a 70 puntos', 
+        3 => 'De 71 a 80 puntos',
+        4 => 'De 81 a 90 puntos',
+        5 => 'De 91 a más puntos'
+    ];
+    
+    return $rangos[$puntos] ?? 'Rango no definido';
+}
+
+
+  //Obtener nombre del mes
+
+private static function obtenerNombreMes($mes)
+{
+    $meses = [
+        1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+        5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+        9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+    ];
+    
+    return $meses[$mes] ?? 'Mes inválido';
+}
 }

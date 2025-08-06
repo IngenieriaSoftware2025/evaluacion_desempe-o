@@ -30,10 +30,7 @@ $router->get('/API/evaluacionformulario/obtenerDatosEvaluador', [EvaluacionFormu
 $router->get('/API/evaluacionformulario/validarTiempoEvaluador', [EvaluacionFormularioController::class, 'validarTiempoEvaluadorAPI']);
 $router->post('/API/evaluacionformulario/guardar', [EvaluacionFormularioController::class, 'guardarEvaluacionAPI']);
 $router->get('/API/evaluacionformulario/eliminar', [EvaluacionFormularioController::class, 'eliminarEvaluacionAPI']);
-
-
-
-
+$router->get('/API/evaluacionformulario/obtenerPafesEvaluado', [EvaluacionFormularioController::class, 'obtenerPafesEvaluadoAPI']);
 
 
 

@@ -39,6 +39,51 @@ const errorEvaluadorCatalogo = document.getElementById('error_evaluador_catalogo
 let datosEvaluadorCargados = false;
 let evaluadorValidado = false;
 
+// =============================================================================
+// PERFIL BIOFÍSICO - Elementos y Variables
+// =============================================================================
+const perfilRadios = document.querySelectorAll('input[name="bol_perfil"]');
+const categoriaItems = document.querySelectorAll('.categoria-item');
+const puntoItems = document.querySelectorAll('.punto-item');
+const perfilSeleccionado = document.getElementById('perfil_seleccionado');
+const perfilTexto = document.getElementById('perfil_texto');
+
+// Mapeo de valores a texto
+const perfilTextos = {
+    '1': 'OBESIDAD II - 1 punto',
+    '2': 'OBESIDAD I - 2 puntos', 
+    '3': 'SOBREPESO - 3 puntos',
+    '4': 'DÉFICIT - 4 puntos',
+    '5': 'NORMAL - 5 puntos'
+};
+
+// =============================================================================
+// CONDICIÓN FÍSICA (PAFEs) - Elementos y Variables
+// =============================================================================
+const pafeEva1 = document.getElementById('pafe_eva1');
+const pafeEva2 = document.getElementById('pafe_eva2');
+const pafeEva3 = document.getElementById('pafe_eva3');
+const pafeEva4 = document.getElementById('pafe_eva4');
+const pafePromedio = document.getElementById('pafe_promedio');
+const bolPafe = document.getElementById('bol_pafe');
+
+const mesEva1 = document.getElementById('mes_eva1');
+const mesEva2 = document.getElementById('mes_eva2');
+const mesEva3 = document.getElementById('mes_eva3');
+const mesEva4 = document.getElementById('mes_eva4');
+
+const rangoItems = document.querySelectorAll('.rango-item');
+const puntoPafeItems = document.querySelectorAll('.punto-pafe-item');
+const pafeInfo = document.getElementById('pafe_info');
+const pafeMensaje = document.getElementById('pafe_mensaje');
+
+// Variables de control PAFE
+let datosPafeCargados = false;
+
+// =============================================================================
+// FUNCIONES GENERALES
+// =============================================================================
+
 /**
  * Función para obtener parámetros de la URL
  */
@@ -64,6 +109,22 @@ const ocultarAlerta = () => {
 }
 
 /**
+ * Función para mostrar información de PAFE
+ */
+const mostrarInfoPafe = (tipo, mensaje) => {
+    pafeInfo.classList.remove('d-none', 'alert-info', 'alert-success', 'alert-warning', 'alert-danger');
+    pafeInfo.classList.add(`alert-${tipo}`);
+    pafeMensaje.textContent = mensaje;
+}
+
+/**
+ * Función para ocultar información de PAFE
+ */
+const ocultarInfoPafe = () => {
+    pafeInfo.classList.add('d-none');
+}
+
+/**
  * Función para limpiar datos del evaluador
  */
 const limpiarDatosEvaluador = () => {
@@ -79,6 +140,31 @@ const limpiarDatosEvaluador = () => {
     evaluadorValidado = false;
     ocultarAlerta();
     evaluadorCatalogo.classList.remove('is-invalid');
+}
+
+/**
+ * Función para limpiar datos de PAFE
+ */
+const limpiarDatosPafe = () => {
+    pafeEva1.value = '';
+    pafeEva2.value = '';
+    pafeEva3.value = '';
+    pafeEva4.value = '';
+    pafePromedio.value = '';
+    bolPafe.value = '';
+    
+    // Limpiar selecciones visuales
+    rangoItems.forEach(item => item.classList.remove('selected'));
+    puntoPafeItems.forEach(item => item.classList.remove('selected'));
+    
+    // Resetear texto de meses
+    mesEva1.textContent = 'Abril 2025';
+    mesEva2.textContent = 'Mayo 2025';
+    mesEva3.textContent = 'Junio 2025';
+    mesEva4.textContent = 'Julio 2025';
+    
+    datosPafeCargados = false;
+    ocultarInfoPafe();
 }
 
 /**
@@ -101,6 +187,21 @@ const formatearTiempo = (meses) => {
     
     return resultado;
 }
+
+/**
+ * Debounce para optimizar las consultas
+ */
+const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    };
+}
+
+// =============================================================================
+// FUNCIONES DE CARGA DE DATOS
+// =============================================================================
 
 /**
  * Cargar datos del evaluado desde la URL
@@ -145,6 +246,10 @@ const cargarDatosEvaluado = async () => {
             bolCatEvaluado.value = data.catalogo || '';
 
             console.log('Datos del evaluado cargados correctamente');
+            
+            // Cargar automáticamente los datos de PAFE
+            await cargarDatosPafe(catalogoEvaluado);
+            
         } else {
             await Swal.fire({
                 position: "center",
@@ -260,6 +365,212 @@ const validarTiempoEvaluador = async (catalogo) => {
     }
 }
 
+// Crear versión con debounce para cargar datos del evaluador
+const cargarDatosEvaluadorDebounced = debounce(cargarDatosEvaluador, 800);
+
+// =============================================================================
+// FUNCIONES DEL PERFIL BIOFÍSICO
+// =============================================================================
+
+/**
+ * Función para actualizar la visualización del perfil seleccionado
+ */
+const actualizarPerfilSeleccionado = (valor) => {
+    // Limpiar selecciones anteriores
+    categoriaItems.forEach(item => item.classList.remove('selected'));
+    puntoItems.forEach(item => item.classList.remove('selected'));
+    
+    if (valor) {
+        // Marcar el item seleccionado
+        const categoriaSeleccionada = document.querySelector(`.categoria-item[data-value="${valor}"]`);
+        const puntoSeleccionado = document.querySelector(`.punto-item[data-value="${valor}"]`);
+        
+        if (categoriaSeleccionada) {
+            categoriaSeleccionada.classList.add('selected');
+        }
+        
+        if (puntoSeleccionado) {
+            puntoSeleccionado.classList.add('selected');
+        }
+        
+        // Actualizar texto informativo
+        if (perfilTexto && perfilSeleccionado) {
+            perfilTexto.textContent = perfilTextos[valor] || 'Selección inválida';
+            perfilSeleccionado.classList.remove('d-none');
+            perfilSeleccionado.classList.remove('alert-warning');
+            perfilSeleccionado.classList.add('alert-success');
+        }
+        
+        console.log(`✅ Perfil biofísico seleccionado: ${perfilTextos[valor]}`);
+    } else {
+        // No hay selección
+        if (perfilTexto && perfilSeleccionado) {
+            perfilTexto.textContent = 'Seleccione una categoría de perfil biofísico';
+            perfilSeleccionado.classList.remove('d-none');
+            perfilSeleccionado.classList.remove('alert-success');
+            perfilSeleccionado.classList.add('alert-warning');
+        }
+    }
+}
+
+/**
+ * Función para validar que el perfil biofísico esté seleccionado
+ */
+const validarPerfilBiofisico = () => {
+    const perfilSeleccionadoRadio = document.querySelector('input[name="bol_perfil"]:checked');
+    
+    if (!perfilSeleccionadoRadio) {
+        Swal.fire({
+            position: "center",
+            icon: "warning",
+            title: "Perfil Biofísico Requerido",
+            text: "Debe seleccionar una categoría de perfil biofísico",
+            showConfirmButton: true,
+        });
+        
+        // Scroll hacia la sección de perfil biofísico si existe
+        const perfilContainer = document.querySelector('.perfil-biofisico-container');
+        if (perfilContainer) {
+            perfilContainer.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        
+        return false;
+    }
+    
+    return true;
+}
+
+// =============================================================================
+// FUNCIONES DE CONDICIÓN FÍSICA (PAFEs)
+// =============================================================================
+
+/**
+ * Cargar datos de PAFEs del evaluado
+ */
+const cargarDatosPafe = async (catalogo) => {
+    if (!catalogo) return;
+
+    mostrarInfoPafe('info', 'Cargando evaluaciones PAFE...');
+
+    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerPafesEvaluado?catalogo=${catalogo}`;
+    const config = {
+        method: 'GET'
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje, data } = datos;
+
+        if (codigo === 1) {
+            // Llenar evaluaciones
+            const evaluaciones = data.puntajes; // [eva1, eva2, eva3, eva4]
+            pafeEva1.value = evaluaciones[0] || 0;
+            pafeEva2.value = evaluaciones[1] || 0;
+            pafeEva3.value = evaluaciones[2] || 0;
+            pafeEva4.value = evaluaciones[3] || 0;
+            
+            // Llenar promedio
+            pafePromedio.value = data.promedio || 0;
+            
+            // Llenar valor oculto para guardar en BD
+            bolPafe.value = data.puntos_pafe || 0;
+            
+            // Actualizar nombres de meses
+            if (data.meses_consultados && data.meses_consultados.length >= 4) {
+                mesEva1.textContent = data.meses_consultados[0];
+                mesEva2.textContent = data.meses_consultados[1];
+                mesEva3.textContent = data.meses_consultados[2];
+                mesEva4.textContent = data.meses_consultados[3];
+            }
+            
+            // Actualizar visualización de rango seleccionado
+            actualizarRangoPafe(data.puntos_pafe);
+            
+            datosPafeCargados = true;
+            
+            // Mostrar información de éxito
+            mostrarInfoPafe('success', `PAFEs cargados correctamente. Promedio: ${data.promedio} - ${data.rango_texto} (${data.puntos_pafe} puntos)`);
+            
+            console.log('✅ Datos de PAFE cargados correctamente:', data);
+            
+        } else {
+            limpiarDatosPafe();
+            mostrarInfoPafe('warning', mensaje || 'No se encontraron evaluaciones PAFE para este especialista');
+        }
+
+    } catch (error) {
+        console.error('Error al cargar datos de PAFE:', error);
+        limpiarDatosPafe();
+        mostrarInfoPafe('danger', 'Error al cargar las evaluaciones PAFE');
+    }
+}
+
+/**
+ * Actualizar la visualización del rango PAFE seleccionado
+ */
+const actualizarRangoPafe = (puntos) => {
+    // Limpiar selecciones anteriores
+    rangoItems.forEach(item => item.classList.remove('selected'));
+    puntoPafeItems.forEach(item => item.classList.remove('selected'));
+    
+    if (puntos !== null && puntos !== undefined) {
+        // Marcar el rango seleccionado
+        const rangoSeleccionado = document.querySelector(`.rango-item[data-value="${puntos}"]`);
+        const puntoSeleccionado = document.querySelector(`.punto-pafe-item[data-value="${puntos}"]`);
+        
+        if (rangoSeleccionado) {
+            rangoSeleccionado.classList.add('selected');
+            // Marcar el radio button correspondiente
+            const radioButton = rangoSeleccionado.querySelector('input[type="radio"]');
+            if (radioButton) {
+                radioButton.checked = true;
+            }
+        }
+        
+        if (puntoSeleccionado) {
+            puntoSeleccionado.classList.add('selected');
+        }
+        
+        console.log(`✅ Rango PAFE actualizado: ${puntos} puntos`);
+    }
+}
+
+/**
+ * Validar que los datos de PAFE estén cargados
+ */
+const validarPafe = () => {
+    if (!datosPafeCargados) {
+        Swal.fire({
+            position: "center",
+            icon: "warning",
+            title: "Evaluaciones PAFE no cargadas",
+            text: "No se han cargado las evaluaciones de condición física (PAFE)",
+            showConfirmButton: true,
+        });
+        
+        // Scroll hacia la sección de PAFE
+        const pafeContainer = document.querySelector('.condicion-fisica-container');
+        if (pafeContainer) {
+            pafeContainer.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        
+        return false;
+    }
+    
+    return true;
+}
+
+// =============================================================================
+// FUNCIONES PRINCIPALES
+// =============================================================================
+
 /**
  * Guardar la evaluación
  */
@@ -313,6 +624,18 @@ const guardarEvaluacion = async (event) => {
             text: "El evaluador no cumple con el tiempo mínimo requerido para realizar la evaluación",
             showConfirmButton: true,
         });
+        BtnGuardar.disabled = false;
+        return;
+    }
+
+    // Validación del perfil biofísico (si la sección existe)
+    if (document.querySelector('input[name="bol_perfil"]') && !validarPerfilBiofisico()) {
+        BtnGuardar.disabled = false;
+        return;
+    }
+
+    // Validación de PAFE (si la sección existe)
+    if (document.getElementById('pafe_eva1') && !validarPafe()) {
         BtnGuardar.disabled = false;
         return;
     }
@@ -403,6 +726,12 @@ const limpiarFormulario = async () => {
     if (confirmacion.isConfirmed) {
         FormEvaluacion.reset();
         limpiarDatosEvaluador();
+        limpiarDatosPafe();
+        
+        // Limpiar selección de perfil biofísico si existe
+        if (typeof actualizarPerfilSeleccionado === 'function') {
+            actualizarPerfilSeleccionado(null);
+        }
         
         // Recargar datos del evaluado
         await cargarDatosEvaluado();
@@ -411,7 +740,7 @@ const limpiarFormulario = async () => {
             position: "center",
             icon: "success",
             title: "Formulario limpiado",
-            text: "Los datos del evaluado se han recargado automáticamente",
+            text: "Los datos del evaluado y PAFEs se han recargado automáticamente",
             timer: 2000,
             showConfirmButton: false
         });
@@ -419,26 +748,29 @@ const limpiarFormulario = async () => {
 }
 
 /**
- * Debounce para optimizar las consultas
+ * Restaurar texto del botón si hay error
  */
-const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func(...args), delay);
-    };
-}
+const restaurarBotonGuardar = () => {
+    BtnGuardar.innerHTML = '<i class="bi bi-floppy me-2"></i>Guardar Datos de Evaluación';
+    BtnGuardar.disabled = !evaluadorValidado;
+};
 
-// Crear versión con debounce para cargar datos del evaluador
-const cargarDatosEvaluadorDebounced = debounce(cargarDatosEvaluador, 800);
+// =============================================================================
+// EVENT LISTENERS
+// =============================================================================
 
 /**
- * Event Listeners
+ * Event listeners principales
  */
-
 // Cargar datos del evaluado al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     cargarDatosEvaluado();
+    
+    // Inicializar perfil biofísico si existe
+    const perfilSeleccionadoActual = document.querySelector('input[name="bol_perfil"]:checked');
+    if (perfilSeleccionadoActual && typeof actualizarPerfilSeleccionado === 'function') {
+        actualizarPerfilSeleccionado(perfilSeleccionadoActual.value);
+    }
 });
 
 // Evento para el input del catálogo del evaluador
@@ -463,13 +795,51 @@ FormEvaluacion.addEventListener('submit', () => {
     BtnGuardar.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Guardando...';
 });
 
-// Restaurar texto del botón si hay error
-const restaurarBotonGuardar = () => {
-    BtnGuardar.innerHTML = '<i class="bi bi-floppy me-2"></i>Guardar Datos de Evaluación';
-    BtnGuardar.disabled = !evaluadorValidado;
-};
-
 // Restaurar botón en caso de error
 window.addEventListener('beforeunload', restaurarBotonGuardar);
 
+/**
+ * Event listeners para el perfil biofísico (se ejecutan solo si existen los elementos)
+ */
+if (perfilRadios.length > 0) {
+    perfilRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                actualizarPerfilSeleccionado(e.target.value);
+            }
+        });
+    });
+}
+
+if (categoriaItems.length > 0) {
+    categoriaItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Evitar doble disparo si se hace click directamente en el radio
+            if (e.target.type !== 'radio') {
+                const valor = item.dataset.value;
+                const radio = document.querySelector(`input[name="bol_perfil"][value="${valor}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    actualizarPerfilSeleccionado(valor);
+                }
+            }
+        });
+    });
+}
+
+if (puntoItems.length > 0) {
+    puntoItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const valor = item.dataset.value;
+            const radio = document.querySelector(`input[name="bol_perfil"][value="${valor}"]`);
+            if (radio) {
+                radio.checked = true;
+                actualizarPerfilSeleccionado(valor);
+            }
+        });
+    });
+}
+
 console.log('✅ JavaScript del Formulario de Evaluación cargado correctamente');
+console.log('✅ JavaScript del Perfil Biofísico integrado correctamente');
+console.log('✅ JavaScript de Condición Física (PAFEs) integrado correctamente');
