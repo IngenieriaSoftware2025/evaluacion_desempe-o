@@ -16,28 +16,14 @@
                 <div class="card-body form-section">
                     <form id="FormBusqueda" enctype="multipart/form-data">
                         <div class="row mb-4">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="catalogo" class="form-label">
                                     <i class="bi bi-person-badge me-1"></i>Catálogo
                                 </label>
                                 <input type="text" class="form-control modern-input" id="catalogo" name="catalogo" 
                                        placeholder="Ingrese catálogo">
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="nombre" class="form-label">
-                                    <i class="bi bi-person me-1"></i>Nombre
-                                </label>
-                                <input type="text" class="form-control modern-input" id="nombre" name="nombre" 
-                                       placeholder="Ingrese nombre">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="apellido" class="form-label">
-                                    <i class="bi bi-person-lines-fill me-1"></i>Apellido
-                                </label>
-                                <input type="text" class="form-control modern-input" id="apellido" name="apellido" 
-                                       placeholder="Ingrese apellido">
-                            </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="grado" class="form-label">
                                     <i class="bi bi-award me-1"></i>Grado
                                 </label>
@@ -47,20 +33,12 @@
                             </div>
                         </div>
                         
-                        <div class="row mb-4">
-                            <div class="col-md-6 mb-3">
-                                <label for="dependencia" class="form-label">
-                                    <i class="bi bi-building me-1"></i>Dependencia
-                                </label>
-                                <select class="form-select modern-select" id="dependencia" name="dependencia">
-                                    <option value="">--Todas--</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
                                 <div class="search-info">
                                     <small class="text-muted">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Complete los campos necesarios y presione buscar
+                                        Los datos se cargan desde morg, mper y grados (especialistas activos). Filtros: catálogo y grado.
                                     </small>
                                 </div>
                             </div>
@@ -68,10 +46,10 @@
                         
                         <div class="text-center button-section">
                             <button class="btn btn-primary btn-modern me-3" type="button" id="BtnBuscar">
-                                <i class="bi bi-search me-2"></i>Buscar Evaluaciones
+                                <i class="bi bi-search me-2"></i>Buscar
                             </button>
                             <button class="btn btn-secondary btn-modern" type="reset" id="BtnLimpiar">
-                                <i class="bi bi-arrow-clockwise me-2"></i>Limpiar Filtros
+                                <i class="bi bi-arrow-clockwise me-2"></i>Limpiar
                             </button>
                         </div>
                     </form>
@@ -86,7 +64,10 @@
                 <div class="card-header bg-info text-white table-header-gradient">
                     <div class="d-flex align-items-center justify-content-center">
                         <i class="bi bi-table me-2"></i>
-                        <h4 class="mb-0">Evaluaciones del Desempeño - Especialistas</h4>
+                        <h4 class="mb-0">Especialistas Activos para Evaluación</h4>
+                    </div>
+                    <div class="text-center mt-2">
+                        <small class="opacity-75">Tablas: morg → mper → grados | Filtro: gra_clase = 4, per_situacion = 11</small>
                     </div>
                 </div>
                 <div class="card-body table-section">
@@ -418,7 +399,6 @@
         padding: 1.25rem 1rem;
         vertical-align: middle;
         border-top: none;
-        text-align: center;
         font-size: 0.9rem;
     }
     
@@ -430,6 +410,19 @@
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.025em;
+    }
+    
+    /* Botones de acción */
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     
     /* Responsive mejorado */
@@ -471,53 +464,6 @@
             padding: 0.875rem 0.5rem;
             font-size: 0.8rem;
         }
-    }
-    
-    @media (max-width: 576px) {
-        .header-title {
-            font-size: 1.25rem;
-        }
-        
-        .military-badge {
-            font-size: 0.8rem;
-            padding: 0.5rem 1rem;
-        }
-        
-        .form-label {
-            font-size: 0.9rem;
-        }
-        
-        .modern-input, .modern-select {
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-        }
-    }
-    
-    /* Animación de carga */
-    .loading {
-        opacity: 0.7;
-        pointer-events: none;
-    }
-    
-    .loading .btn-modern {
-        position: relative;
-    }
-    
-    .loading .btn-modern::after {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        margin: auto;
-        border: 2px solid transparent;
-        border-top-color: #ffffff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
     }
 </style>
 

@@ -1,37 +1,11 @@
 import Swal from "sweetalert2";
-import { validarFormulario } from '../funciones';
 import DataTable from "datatables.net-bs5";
 import { lenguaje } from "../lenguaje";
 
 const FormBusqueda = document.getElementById('FormBusqueda');
 const BtnBuscar = document.getElementById('BtnBuscar');
 const BtnLimpiar = document.getElementById('BtnLimpiar');
-const SelectDependencia = document.getElementById('dependencia');
 const SelectGrado = document.getElementById('grado');
-
-// Cargar dependencias en el dropdown
-const CargarDependencias = async () => {
-    const url = '/evaluacion_desempe-o/API/evaluacionespecialistas/obtenerDependencias';
-    const config = {
-        method: 'GET'
-    }
-
-    try {
-        const respuesta = await fetch(url, config);
-        const datos = await respuesta.json();
-        const { codigo, data } = datos
-
-        if (codigo == 1) {
-            SelectDependencia.innerHTML = '<option value="">--Todas--</option>';
-            data.forEach(dep => {
-                SelectDependencia.innerHTML += `<option value="${dep.dependencia}">${dep.dependencia}</option>`;
-            });
-        }
-
-    } catch (error) {
-        console.log(error)
-    }
-}
 
 // Cargar grados en el dropdown
 const CargarGrados = async () => {
@@ -61,19 +35,13 @@ const BuscarEvaluaciones = async () => {
     BtnBuscar.disabled = true;
     
     const catalogo = document.getElementById('catalogo').value;
-    const nombre = document.getElementById('nombre').value;
-    const apellido = document.getElementById('apellido').value;
     const grado = document.getElementById('grado').value;
-    const dependencia = document.getElementById('dependencia').value;
 
     let url = '/evaluacion_desempe-o/API/evaluacionespecialistas/buscar?';
     
     const params = [];
     if (catalogo) params.push(`catalogo=${encodeURIComponent(catalogo)}`);
-    if (nombre) params.push(`nombre=${encodeURIComponent(nombre)}`);
-    if (apellido) params.push(`apellido=${encodeURIComponent(apellido)}`);
     if (grado) params.push(`grado=${encodeURIComponent(grado)}`);
-    if (dependencia) params.push(`dependencia=${encodeURIComponent(dependencia)}`);
     
     url += params.join('&');
 
@@ -112,6 +80,28 @@ const BuscarEvaluaciones = async () => {
     BtnBuscar.disabled = false;
 }
 
+// Cargar datos automáticamente al iniciar
+const CargarDatosIniciales = async () => {
+    const url = '/evaluacion_desempe-o/API/evaluacionespecialistas/buscar';
+    const config = {
+        method: 'GET'
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, data } = datos
+
+        if (codigo == 1) {
+            datatable.clear().draw();
+            datatable.rows.add(data).draw();
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const datatable = new DataTable('#TableEvaluaciones', {
     dom: `
         <"row mt-3 justify-content-between" 
@@ -131,93 +121,56 @@ const datatable = new DataTable('#TableEvaluaciones', {
         {
             title: 'No.',
             data: 'catalogo',
-            width: '5%',
+            width: '8%',
+            className: 'text-center',
             render: (data, type, row, meta) => meta.row + 1
         },
-        { 
-            title: 'EVALUACION', 
-            data: 'evaluacion', 
-            width: '8%',
-            render: (data, type, row) => {
-                return data && data > 0 ? data : 'N/A';
-            }
+        {
+            title: 'CATALOGO',
+            data: 'catalogo',
+            width: '12%',
+            className: 'text-center fw-bold'
         },
         { 
-            title: 'CATALOGO', 
-            data: 'catalogo', 
-            width: '8%'
-        },
-        { 
-            title: 'GRADO', 
-            data: 'grado', 
-            width: '10%'
-        },
-        { 
-            title: 'NOMBRE COMPLETO', 
+            title: 'GRADO Y NOMBRE', 
             data: 'nombre_completo', 
-            width: '20%'
+            width: '35%'
         },
         { 
-            title: 'DEPENDENCIA', 
-            data: 'dependencia', 
-            width: '15%'
-        },
-        { 
-            title: 'EMPLEO', 
-            data: 'empleo', 
-            width: '12%'
-        },
-        { 
-            title: 'SITUACION', 
-            data: 'situacion', 
-            width: '8%',
-            render: (data, type, row) => {
-                let badgeClass = 'bg-secondary';
-                switch(data) {
-                    case 'ACTIVO':
-                        badgeClass = 'bg-success';
-                        break;
-                    case 'INACTIVO':
-                        badgeClass = 'bg-danger';
-                        break;
-                    case 'SIN EVALUACION':
-                        badgeClass = 'bg-warning';
-                        break;
-                }
-                return `<span class="badge ${badgeClass}">${data}</span>`;
-            }
-        },
-        { 
-            title: 'NOTA', 
-            data: 'nota', 
-            width: '6%',
-            render: (data, type, row) => {
-                return data && data > 0 ? data : 'N/A';
-            }
+            title: 'EMPLEO/PLAZA', 
+            data: 'plaza', 
+            width: '25%'
         },
         {
-            title: 'VERIFICAR',
+            title: 'INGRESO DE DATOS',
             data: 'catalogo',
             searchable: false,
             orderable: false,
-            width: '8%',
+            width: '10%',
+            className: 'text-center',
             render: (data, type, row, meta) => {
                 return `
-                    <div class='d-flex justify-content-center'>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Opciones
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item ver-detalle" href="#" data-catalogo="${data}">
-                                    <i class="bi bi-eye me-1"></i>Ver Detalle
-                                </a></li>
-                                <li><a class="dropdown-item evaluar" href="#" data-catalogo="${data}">
-                                    <i class="bi bi-clipboard-check me-1"></i>Evaluar
-                                </a></li>
-                            </ul>
-                        </div>
-                    </div>`;
+                    <button class='btn btn-success btn-sm ingreso-datos' 
+                        data-catalogo="${data}" 
+                        title="Ingreso de Datos">
+                        <i class="bi bi-plus-circle me-1"></i>INGRESAR EVALUACIÓN
+                    </button>`;
+            }
+        },
+        {
+            title: 'IMPRESIÓN DE FORMULARIOS',
+            data: 'catalogo',
+            searchable: false,
+            orderable: false,
+            width: '10%',
+            className: 'text-center',
+            render: (data, type, row, meta) => {
+                return `
+                    <button class='btn btn-primary btn-sm imprimir-formato' 
+                        data-catalogo="${data}" 
+                        title="Imprimir Formato">
+                        <i class="bi bi-printer me-1"></i>IMPRIMIR FORMATO
+                    </button>`;
             }
         }
     ]
@@ -225,41 +178,32 @@ const datatable = new DataTable('#TableEvaluaciones', {
 
 const limpiarTodo = () => {
     FormBusqueda.reset();
-    datatable.clear().draw();
+    // Recargar todos los datos después de limpiar
+    CargarDatosIniciales();
 }
 
-const VerDetalle = async (e) => {
+const IngresarDatos = async (e) => {
     e.preventDefault();
     const catalogo = e.currentTarget.dataset.catalogo;
     
-    await Swal.fire({
-        position: "center",
-        icon: "info",
-        title: "Ver Detalle",
-        text: `Mostrando detalle del catálogo: ${catalogo}`,
-        showConfirmButton: true,
-    });
+    // Redirigir a la página de ingreso de datos
+    window.location.href = `/evaluacion_desempe-o/ingresar-datos?catalogo=${catalogo}`;
 }
 
-const Evaluar = async (e) => {
+const ImprimirFormato = async (e) => {
     e.preventDefault();
     const catalogo = e.currentTarget.dataset.catalogo;
     
-    await Swal.fire({
-        position: "center",
-        icon: "info",
-        title: "Evaluar",
-        text: `Evaluando catálogo: ${catalogo}`,
-        showConfirmButton: true,
-    });
+    // Redirigir a la página de impresión de formularios
+    window.location.href = `/evaluacion_desempe-o/imprimir-formato?catalogo=${catalogo}`;
 }
 
 // Cargar datos al iniciar
-CargarDependencias();
 CargarGrados();
+CargarDatosIniciales(); // Cargar datos automáticamente
 
 // Event listeners
-datatable.on('click', '.ver-detalle', VerDetalle);
-datatable.on('click', '.evaluar', Evaluar);
+datatable.on('click', '.ingreso-datos', IngresarDatos);
+datatable.on('click', '.imprimir-formato', ImprimirFormato);
 BtnBuscar.addEventListener('click', BuscarEvaluaciones);
 BtnLimpiar.addEventListener('click', limpiarTodo);
