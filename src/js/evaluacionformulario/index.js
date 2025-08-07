@@ -81,6 +81,51 @@ const pafeMensaje = document.getElementById('pafe_mensaje');
 let datosPafeCargados = false;
 
 // =============================================================================
+// DEMÉRITOS - Elementos y Variables
+// =============================================================================
+const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
+const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
+const demeritosSeleccionado = document.getElementById('demeritos_seleccionado');
+const demeritosTexto = document.getElementById('demeritos_texto');
+const bolDemeritos = document.getElementById('bol_demeritos');
+
+// Mapeo de valores a texto para deméritos
+const demeritosTextos = {
+    '5': '0 deméritos - 5 puntos',
+    '4': 'De 1 a 18 deméritos - 4 puntos',
+    '3': 'De 19 a 36 deméritos - 3 puntos',
+    '2': 'De 37 a 54 deméritos - 2 puntos',
+    '1': 'De 55 a 74 deméritos - 1 punto',
+    '0': 'De 75 a 100 deméritos - 0 puntos'
+};
+
+// Variables de control deméritos
+let datosDemeritosCargados = false;
+
+// =============================================================================
+// ARRESTOS - Elementos y Variables
+// =============================================================================
+const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
+const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
+const arrestosSeleccionado = document.getElementById('arrestos_seleccionado');
+const arrestosTexto = document.getElementById('arrestos_texto');
+const bolArrestos = document.getElementById('bol_arrestos');
+
+// Mapeo de valores a texto para arrestos
+const arrestosTextos = {
+    '5': '0 arrestos - 5 puntos',
+    '4': 'De 1 a 5 arrestos - 4 puntos',
+    '3': 'De 6 a 10 arrestos - 3 puntos',
+    '2': 'De 11 a 15 arrestos - 2 puntos',
+    '1': 'De 16 a más arrestos - 1 punto'
+};
+
+// Variables de control arrestos
+let datosArrestosCargados = false;
+
+// =============================================================================
 // FUNCIONES GENERALES
 // =============================================================================
 
@@ -112,16 +157,20 @@ const ocultarAlerta = () => {
  * Función para mostrar información de PAFE
  */
 const mostrarInfoPafe = (tipo, mensaje) => {
-    pafeInfo.classList.remove('d-none', 'alert-info', 'alert-success', 'alert-warning', 'alert-danger');
-    pafeInfo.classList.add(`alert-${tipo}`);
-    pafeMensaje.textContent = mensaje;
+    if (pafeInfo && pafeMensaje) {
+        pafeInfo.classList.remove('d-none', 'alert-info', 'alert-success', 'alert-warning', 'alert-danger');
+        pafeInfo.classList.add(`alert-${tipo}`);
+        pafeMensaje.textContent = mensaje;
+    }
 }
 
 /**
  * Función para ocultar información de PAFE
  */
 const ocultarInfoPafe = () => {
-    pafeInfo.classList.add('d-none');
+    if (pafeInfo) {
+        pafeInfo.classList.add('d-none');
+    }
 }
 
 /**
@@ -146,25 +195,42 @@ const limpiarDatosEvaluador = () => {
  * Función para limpiar datos de PAFE
  */
 const limpiarDatosPafe = () => {
-    pafeEva1.value = '';
-    pafeEva2.value = '';
-    pafeEva3.value = '';
-    pafeEva4.value = '';
-    pafePromedio.value = '';
-    bolPafe.value = '';
+    if (pafeEva1) pafeEva1.value = '';
+    if (pafeEva2) pafeEva2.value = '';
+    if (pafeEva3) pafeEva3.value = '';
+    if (pafeEva4) pafeEva4.value = '';
+    if (pafePromedio) pafePromedio.value = '';
+    if (bolPafe) bolPafe.value = '';
     
     // Limpiar selecciones visuales
     rangoItems.forEach(item => item.classList.remove('selected'));
     puntoPafeItems.forEach(item => item.classList.remove('selected'));
     
     // Resetear texto de meses
-    mesEva1.textContent = 'Abril 2025';
-    mesEva2.textContent = 'Mayo 2025';
-    mesEva3.textContent = 'Junio 2025';
-    mesEva4.textContent = 'Julio 2025';
+    if (mesEva1) mesEva1.textContent = 'Abril 2025';
+    if (mesEva2) mesEva2.textContent = 'Mayo 2025';
+    if (mesEva3) mesEva3.textContent = 'Junio 2025';
+    if (mesEva4) mesEva4.textContent = 'Julio 2025';
     
     datosPafeCargados = false;
     ocultarInfoPafe();
+}
+
+/**
+ * Función para limpiar datos de deméritos y arrestos
+ */
+const limpiarDatosDemeritosArrestos = () => {
+    // Limpiar deméritos
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    demeritosRadios.forEach(radio => radio.checked = false);
+    actualizarDemeritosSeleccionado(null);
+    datosDemeritosCargados = false;
+    
+    // Limpiar arrestos
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    arrestosRadios.forEach(radio => radio.checked = false);
+    actualizarArrestosSeleccionado(null);
+    datosArrestosCargados = false;
 }
 
 /**
@@ -245,10 +311,14 @@ const cargarDatosEvaluado = async () => {
             // Llenar campos ocultos
             bolCatEvaluado.value = data.catalogo || '';
 
-            console.log('Datos del evaluado cargados correctamente');
+            console.log('✅ Datos del evaluado cargados correctamente');
             
             // Cargar automáticamente los datos de PAFE
             await cargarDatosPafe(catalogoEvaluado);
+            
+            // ⭐ NUEVAS LÍNEAS - Cargar automáticamente deméritos y arrestos
+            await cargarDatosDemeritos(catalogoEvaluado);
+            await cargarDatosArrestos(catalogoEvaluado);
             
         } else {
             await Swal.fire({
@@ -369,6 +439,94 @@ const validarTiempoEvaluador = async (catalogo) => {
 const cargarDatosEvaluadorDebounced = debounce(cargarDatosEvaluador, 800);
 
 // =============================================================================
+// FUNCIONES DE CARGA AUTOMÁTICA DE DEMÉRITOS Y ARRESTOS
+// =============================================================================
+
+/**
+ * Cargar datos de deméritos del evaluado
+ */
+const cargarDatosDemeritos = async (catalogo) => {
+    if (!catalogo) return;
+
+    console.log('🔍 Cargando deméritos para catálogo:', catalogo);
+
+    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerDemeritosEvaluado?catalogo=${catalogo}`;
+    const config = {
+        method: 'GET'
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje, data } = datos;
+
+        if (codigo === 1) {
+            // Marcar automáticamente el radio button correspondiente
+            const radioDemeritos = document.querySelector(`input[name="rango_demeritos"][value="${data.puntos}"]`);
+            if (radioDemeritos) {
+                radioDemeritos.checked = true;
+                actualizarDemeritosSeleccionado(data.puntos.toString());
+                datosDemeritosCargados = true;
+                deshabilitarControlesDemeritos();
+            }
+
+            console.log(`✅ Deméritos cargados: ${data.demeritos} deméritos = ${data.puntos} puntos`);
+            console.log(`📊 Rango: ${data.rango_texto}`);
+            
+        } else {
+            console.warn('⚠️ No se pudieron cargar los deméritos:', mensaje);
+            // En caso de error, no seleccionar nada automáticamente
+        }
+
+    } catch (error) {
+        console.error('❌ Error al cargar datos de deméritos:', error);
+        // En caso de error, no hacer nada para no romper el formulario
+    }
+}
+
+/**
+ * Cargar datos de arrestos del evaluado
+ */
+const cargarDatosArrestos = async (catalogo) => {
+    if (!catalogo) return;
+
+    console.log('🔍 Cargando arrestos para catálogo:', catalogo);
+
+    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerArrestosEvaluado?catalogo=${catalogo}`;
+    const config = {
+        method: 'GET'
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje, data } = datos;
+
+        if (codigo === 1) {
+            // Marcar automáticamente el radio button correspondiente
+            const radioArrestos = document.querySelector(`input[name="rango_arrestos"][value="${data.puntos}"]`);
+            if (radioArrestos) {
+                radioArrestos.checked = true;
+                actualizarArrestosSeleccionado(data.puntos.toString());
+                datosArrestosCargados = true;
+                deshabilitarControlesArrestos();
+            }
+
+            console.log(`✅ Arrestos cargados: ${data.arrestos} arrestos = ${data.puntos} puntos`);
+            console.log(`📊 Rango: ${data.rango_texto}`);
+            
+        } else {
+            console.warn('⚠️ No se pudieron cargar los arrestos:', mensaje);
+            // En caso de error, no seleccionar nada automáticamente
+        }
+
+    } catch (error) {
+        console.error('❌ Error al cargar datos de arrestos:', error);
+        // En caso de error, no hacer nada para no romper el formulario
+    }
+}
+
+// =============================================================================
 // FUNCIONES DEL PERFIL BIOFÍSICO
 // =============================================================================
 
@@ -468,23 +626,23 @@ const cargarDatosPafe = async (catalogo) => {
         if (codigo === 1) {
             // Llenar evaluaciones
             const evaluaciones = data.puntajes; // [eva1, eva2, eva3, eva4]
-            pafeEva1.value = evaluaciones[0] || 0;
-            pafeEva2.value = evaluaciones[1] || 0;
-            pafeEva3.value = evaluaciones[2] || 0;
-            pafeEva4.value = evaluaciones[3] || 0;
+            if (pafeEva1) pafeEva1.value = evaluaciones[0] || 0;
+            if (pafeEva2) pafeEva2.value = evaluaciones[1] || 0;
+            if (pafeEva3) pafeEva3.value = evaluaciones[2] || 0;
+            if (pafeEva4) pafeEva4.value = evaluaciones[3] || 0;
             
             // Llenar promedio
-            pafePromedio.value = data.promedio || 0;
+            if (pafePromedio) pafePromedio.value = data.promedio || 0;
             
             // Llenar valor oculto para guardar en BD
-            bolPafe.value = data.puntos_pafe || 0;
+            if (bolPafe) bolPafe.value = data.puntos_pafe || 0;
             
             // Actualizar nombres de meses
             if (data.meses_consultados && data.meses_consultados.length >= 4) {
-                mesEva1.textContent = data.meses_consultados[0];
-                mesEva2.textContent = data.meses_consultados[1];
-                mesEva3.textContent = data.meses_consultados[2];
-                mesEva4.textContent = data.meses_consultados[3];
+                if (mesEva1) mesEva1.textContent = data.meses_consultados[0];
+                if (mesEva2) mesEva2.textContent = data.meses_consultados[1];
+                if (mesEva3) mesEva3.textContent = data.meses_consultados[2];
+                if (mesEva4) mesEva4.textContent = data.meses_consultados[3];
             }
             
             // Actualizar visualización de rango seleccionado
@@ -543,7 +701,7 @@ const actualizarRangoPafe = (puntos) => {
  * Validar que los datos de PAFE estén cargados
  */
 const validarPafe = () => {
-    if (!datosPafeCargados) {
+    if (!datosPafeCargados && document.getElementById('pafe_eva1')) {
         Swal.fire({
             position: "center",
             icon: "warning",
@@ -556,6 +714,174 @@ const validarPafe = () => {
         const pafeContainer = document.querySelector('.condicion-fisica-container');
         if (pafeContainer) {
             pafeContainer.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        
+        return false;
+    }
+    
+    return true;
+}
+
+// =============================================================================
+// FUNCIONES DE DEMÉRITOS
+// =============================================================================
+
+/**
+ * Función para actualizar la visualización de deméritos seleccionados
+ */
+const actualizarDemeritosSeleccionado = (valor) => {
+    // Limpiar selecciones anteriores
+    rangoDemeritosItems.forEach(item => item.classList.remove('selected'));
+    puntoDemeritosItems.forEach(item => item.classList.remove('selected'));
+    
+    if (valor) {
+        // Marcar el item seleccionado
+        const rangoSeleccionado = document.querySelector(`.rango-demeritos-item[data-value="${valor}"]`);
+        const puntoSeleccionado = document.querySelector(`.punto-demeritos-item[data-value="${valor}"]`);
+        
+        if (rangoSeleccionado) {
+            rangoSeleccionado.classList.add('selected');
+        }
+        
+        if (puntoSeleccionado) {
+            puntoSeleccionado.classList.add('selected');
+        }
+        
+        // Actualizar campo oculto
+        if (bolDemeritos) {
+            bolDemeritos.value = valor;
+        }
+        
+        // Actualizar texto informativo
+        if (demeritosTexto && demeritosSeleccionado) {
+            demeritosTexto.textContent = demeritosTextos[valor] || 'Selección inválida';
+            demeritosSeleccionado.classList.remove('d-none');
+            demeritosSeleccionado.classList.remove('alert-warning');
+            demeritosSeleccionado.classList.add('alert-success');
+        }
+        
+        console.log(`✅ Deméritos seleccionados: ${demeritosTextos[valor]}`);
+    } else {
+        // No hay selección
+        if (bolDemeritos) {
+            bolDemeritos.value = '';
+        }
+        
+        if (demeritosTexto && demeritosSeleccionado) {
+            demeritosTexto.textContent = 'Seleccione un rango de deméritos';
+            demeritosSeleccionado.classList.remove('d-none');
+            demeritosSeleccionado.classList.remove('alert-success');
+            demeritosSeleccionado.classList.add('alert-warning');
+        }
+    }
+}
+
+/**
+ * Función para validar que los deméritos estén seleccionados
+ */
+const validarDemeritos = () => {
+    const demeritosSeleccionadoRadio = document.querySelector('input[name="rango_demeritos"]:checked');
+    
+    if (!demeritosSeleccionadoRadio && document.querySelector('input[name="rango_demeritos"]')) {
+        Swal.fire({
+            position: "center",
+            icon: "warning",
+            title: "Deméritos Requerido",
+            text: "Debe seleccionar un rango de deméritos",
+            showConfirmButton: true,
+        });
+        
+        // Scroll hacia la sección de deméritos
+        const demeritosContainer = document.querySelector('.demeritos-container');
+        if (demeritosContainer) {
+            demeritosContainer.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        
+        return false;
+    }
+    
+    return true;
+}
+
+// =============================================================================
+// FUNCIONES DE ARRESTOS
+// =============================================================================
+
+/**
+ * Función para actualizar la visualización de arrestos seleccionados
+ */
+const actualizarArrestosSeleccionado = (valor) => {
+    // Limpiar selecciones anteriores
+    rangoArrestosItems.forEach(item => item.classList.remove('selected'));
+    puntoArrestosItems.forEach(item => item.classList.remove('selected'));
+    
+    if (valor) {
+        // Marcar el item seleccionado
+        const rangoSeleccionado = document.querySelector(`.rango-arrestos-item[data-value="${valor}"]`);
+        const puntoSeleccionado = document.querySelector(`.punto-arrestos-item[data-value="${valor}"]`);
+        
+        if (rangoSeleccionado) {
+            rangoSeleccionado.classList.add('selected');
+        }
+        
+        if (puntoSeleccionado) {
+            puntoSeleccionado.classList.add('selected');
+        }
+        
+        // Actualizar campo oculto
+        if (bolArrestos) {
+            bolArrestos.value = valor;
+        }
+        
+        // Actualizar texto informativo
+        if (arrestosTexto && arrestosSeleccionado) {
+            arrestosTexto.textContent = arrestosTextos[valor] || 'Selección inválida';
+            arrestosSeleccionado.classList.remove('d-none');
+            arrestosSeleccionado.classList.remove('alert-warning');
+            arrestosSeleccionado.classList.add('alert-success');
+        }
+        
+        console.log(`✅ Arrestos seleccionados: ${arrestosTextos[valor]}`);
+    } else {
+        // No hay selección
+        if (bolArrestos) {
+            bolArrestos.value = '';
+        }
+        
+        if (arrestosTexto && arrestosSeleccionado) {
+            arrestosTexto.textContent = 'Seleccione un rango de arrestos';
+            arrestosSeleccionado.classList.remove('d-none');
+            arrestosSeleccionado.classList.remove('alert-success');
+            arrestosSeleccionado.classList.add('alert-warning');
+        }
+    }
+}
+
+/**
+ * Función para validar que los arrestos estén seleccionados
+ */
+const validarArrestos = () => {
+    const arrestosSeleccionadoRadio = document.querySelector('input[name="rango_arrestos"]:checked');
+    
+    if (!arrestosSeleccionadoRadio && document.querySelector('input[name="rango_arrestos"]')) {
+        Swal.fire({
+            position: "center",
+            icon: "warning",
+            title: "Arrestos Requerido",
+            text: "Debe seleccionar un rango de arrestos",
+            showConfirmButton: true,
+        });
+        
+        // Scroll hacia la sección de arrestos
+        const arrestosContainer = document.querySelector('.arrestos-container');
+        if (arrestosContainer) {
+            arrestosContainer.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
@@ -636,6 +962,18 @@ const guardarEvaluacion = async (event) => {
 
     // Validación de PAFE (si la sección existe)
     if (document.getElementById('pafe_eva1') && !validarPafe()) {
+        BtnGuardar.disabled = false;
+        return;
+    }
+
+    // Validación de deméritos (si la sección existe)
+    if (!validarDemeritos()) {
+        BtnGuardar.disabled = false;
+        return;
+    }
+
+    // Validación de arrestos (si la sección existe)
+    if (!validarArrestos()) {
         BtnGuardar.disabled = false;
         return;
     }
@@ -727,11 +1065,16 @@ const limpiarFormulario = async () => {
         FormEvaluacion.reset();
         limpiarDatosEvaluador();
         limpiarDatosPafe();
+        limpiarDatosDemeritosArrestos(); 
+        habilitarControlesDemeritos();
+        habilitarControlesArrestos();
         
-        // Limpiar selección de perfil biofísico si existe
+        // Limpiar selecciones
         if (typeof actualizarPerfilSeleccionado === 'function') {
             actualizarPerfilSeleccionado(null);
         }
+        actualizarDemeritosSeleccionado(null);
+        actualizarArrestosSeleccionado(null);
         
         // Recargar datos del evaluado
         await cargarDatosEvaluado();
@@ -740,7 +1083,7 @@ const limpiarFormulario = async () => {
             position: "center",
             icon: "success",
             title: "Formulario limpiado",
-            text: "Los datos del evaluado y PAFEs se han recargado automáticamente",
+            text: "Los datos del evaluado, PAFEs, deméritos y arrestos se han recargado automáticamente",
             timer: 2000,
             showConfirmButton: false
         });
@@ -771,6 +1114,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (perfilSeleccionadoActual && typeof actualizarPerfilSeleccionado === 'function') {
         actualizarPerfilSeleccionado(perfilSeleccionadoActual.value);
     }
+
+    // Inicializar deméritos si existe
+    const demeritosSeleccionadoActual = document.querySelector('input[name="rango_demeritos"]:checked');
+    if (demeritosSeleccionadoActual) {
+        actualizarDemeritosSeleccionado(demeritosSeleccionadoActual.value);
+    }
+
+    // Inicializar arrestos si existe
+    const arrestosSeleccionadoActual = document.querySelector('input[name="rango_arrestos"]:checked');
+    if (arrestosSeleccionadoActual) {
+        actualizarArrestosSeleccionado(arrestosSeleccionadoActual.value);
+    }
+
+    // ⭐ NUEVA LÍNEA - Log de integración
+    console.log('✅ JavaScript de Deméritos y Arrestos integrado correctamente');
 });
 
 // Evento para el input del catálogo del evaluador
@@ -840,6 +1198,269 @@ if (puntoItems.length > 0) {
     });
 }
 
+/**
+ * Event listeners para deméritos
+ */
+if (demeritosRadios.length > 0) {
+    demeritosRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                actualizarDemeritosSeleccionado(e.target.value);
+            }
+        });
+    });
+}
+
+if (rangoDemeritosItems.length > 0) {
+    rangoDemeritosItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Evitar doble disparo si se hace click directamente en el radio
+            if (e.target.type !== 'radio') {
+                const valor = item.dataset.value;
+                const radio = document.querySelector(`input[name="rango_demeritos"][value="${valor}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    actualizarDemeritosSeleccionado(valor);
+                }
+            }
+        });
+    });
+}
+
+if (puntoDemeritosItems.length > 0) {
+    puntoDemeritosItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const valor = item.dataset.value;
+            const radio = document.querySelector(`input[name="rango_demeritos"][value="${valor}"]`);
+            if (radio) {
+                radio.checked = true;
+                actualizarDemeritosSeleccionado(valor);
+            }
+        });
+    });
+}
+
+/**
+ * Event listeners para arrestos
+ */
+if (arrestosRadios.length > 0) {
+    arrestosRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                actualizarArrestosSeleccionado(e.target.value);
+            }
+        });
+    });
+}
+
+if (rangoArrestosItems.length > 0) {
+    rangoArrestosItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Evitar doble disparo si se hace click directamente en el radio
+            if (e.target.type !== 'radio') {
+                const valor = item.dataset.value;
+                const radio = document.querySelector(`input[name="rango_arrestos"][value="${valor}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    actualizarArrestosSeleccionado(valor);
+                }
+            }
+        });
+    });
+}
+
+if (puntoArrestosItems.length > 0) {
+    puntoArrestosItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const valor = item.dataset.value;
+            const radio = document.querySelector(`input[name="rango_arrestos"][value="${valor}"]`);
+            if (radio) {
+                radio.checked = true;
+                actualizarArrestosSeleccionado(valor);
+            }
+        });
+    });
+}
+
+
+
+// =============================================================================
+// FUNCIONES PARA DESHABILITAR CONTROLES AUTOMÁTICOS
+// =============================================================================
+
+/**
+ * Deshabilitar todos los controles de deméritos
+ */
+const deshabilitarControlesDemeritos = () => {
+    // Deshabilitar todos los radio buttons de deméritos
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    demeritosRadios.forEach(radio => {
+        radio.disabled = true;
+    });
+
+    // Deshabilitar clicks en los items visuales
+    const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
+    rangoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
+    puntoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    console.log('🔒 Controles de deméritos deshabilitados (carga automática)');
+}
+
+/**
+ * Deshabilitar todos los controles de arrestos
+ */
+const deshabilitarControlesArrestos = () => {
+    // Deshabilitar todos los radio buttons de arrestos
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    arrestosRadios.forEach(radio => {
+        radio.disabled = true;
+    });
+
+    // Deshabilitar clicks en los items visuales
+    const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
+    rangoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
+    puntoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    console.log('🔒 Controles de arrestos deshabilitados (carga automática)');
+}
+
+/**
+ * Habilitar controles de deméritos (para cuando se limpia)
+ */
+const habilitarControlesDemeritos = () => {
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    demeritosRadios.forEach(radio => {
+        radio.disabled = false;
+    });
+
+    const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
+    rangoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+
+    const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
+    puntoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+}
+
+/**
+ * Habilitar controles de arrestos (para cuando se limpia)
+ */
+const habilitarControlesArrestos = () => {
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    arrestosRadios.forEach(radio => {
+        radio.disabled = false;
+    });
+
+    const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
+    rangoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+
+    const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
+    puntoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+}
+
+// =============================================================================
+// MODIFICAR LAS FUNCIONES EXISTENTES
+// =============================================================================
+
+// MODIFICAR la función cargarDatosDemeritos - AGREGAR al final (antes del } catch):
+            // ⭐ NUEVA LÍNEA - Deshabilitar controles después de cargar
+            deshabilitarControlesDemeritos();
+
+// MODIFICAR la función cargarDatosArrestos - AGREGAR al final (antes del } catch):
+            // ⭐ NUEVA LÍNEA - Deshabilitar controles después de cargar
+            deshabilitarControlesArrestos();
+
+// MODIFICAR la función limpiarDatosDemeritosArrestos - AGREGAR al final:
+    // ⭐ NUEVAS LÍNEAS - Habilitar controles al limpiar
+    habilitarControlesDemeritos();
+    habilitarControlesArrestos();
+
+// =============================================================================
+// CSS ADICIONAL PARA ELEMENTOS DESHABILITADOS
+// =============================================================================
+
+// Agregar este CSS al final del archivo JavaScript (o al CSS principal):
+const stylesCSS = `
+<style>
+.rango-demeritos-item.disabled-auto,
+.rango-arrestos-item.disabled-auto,
+.punto-demeritos-item.disabled-auto,
+.punto-arrestos-item.disabled-auto {
+    cursor: not-allowed !important;
+    background-color: #f3f4f6 !important;
+}
+
+.rango-demeritos-item.disabled-auto:hover,
+.rango-arrestos-item.disabled-auto:hover,
+.punto-demeritos-item.disabled-auto:hover,
+.punto-arrestos-item.disabled-auto:hover {
+    transform: none !important;
+    border-color: #e5e7eb !important;
+}
+
+/* Estilo especial para los elementos seleccionados automáticamente */
+.rango-demeritos-item.selected.disabled-auto,
+.rango-arrestos-item.selected.disabled-auto {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(220, 38, 38, 0.1) 100%) !important;
+    border-color: #dc2626 !important;
+}
+
+.punto-demeritos-item.selected.disabled-auto .punto-demeritos-box,
+.punto-arrestos-item.selected.disabled-auto .punto-arrestos-box {
+    background: #dc2626 !important;
+    color: white !important;
+    opacity: 0.8 !important;
+}
+</style>
+`;
+
+// Inyectar CSS automáticamente
+if (document.head) {
+    document.head.insertAdjacentHTML('beforeend', stylesCSS);
+}
+
+
+
+
+
+
 console.log('✅ JavaScript del Formulario de Evaluación cargado correctamente');
 console.log('✅ JavaScript del Perfil Biofísico integrado correctamente');
 console.log('✅ JavaScript de Condición Física (PAFEs) integrado correctamente');
+console.log('✅ JavaScript de Deméritos integrado correctamente');
+console.log('✅ JavaScript de Arrestos integrado correctamente');
+console.log('🚀 Sistema de carga automática de deméritos y arrestos activado');

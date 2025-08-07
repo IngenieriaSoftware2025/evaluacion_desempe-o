@@ -472,6 +472,228 @@
     </div>
 </div>
 
+
+
+
+
+<!-- C. Deméritos -->
+<div class="subsection mb-4">
+    <div class="subsection-header mb-3">
+        <h5 class="subsection-title">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            C. Deméritos
+        </h5>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instructions-box mb-4">
+        <div class="instruction-text">
+            Verifique cuidadosamente en archivos físicos y magnéticos, la cantidad de deméritos acumulados 
+            por el especialista, durante el periodo de evaluación; luego, marque con una X el rango donde se 
+            encuentre la cantidad encontrada.
+        </div>
+    </div>
+
+    <!-- Contenedor principal de deméritos -->
+    <div class="demeritos-container">
+        <div class="row">
+            <!-- Columna de rangos -->
+            <div class="col-md-8">
+                <div class="rangos-header mb-3">
+                    <h6><i class="bi bi-list-ol me-2"></i>Rango</h6>
+                </div>
+                <div class="rangos-demeritos-container">
+                    <input type="hidden" id="bol_demeritos" name="bol_demeritos">
+                    
+                    <div class="rango-demeritos-item" data-value="5">
+                        <div class="rango-content">
+                            <input type="radio" id="demeritos_0" name="rango_demeritos" value="5" class="rango-radio">
+                            <label for="demeritos_0" class="rango-label">0</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-demeritos-item" data-value="4">
+                        <div class="rango-content">
+                            <input type="radio" id="demeritos_1_18" name="rango_demeritos" value="4" class="rango-radio">
+                            <label for="demeritos_1_18" class="rango-label">De 1 a 18</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-demeritos-item" data-value="3">
+                        <div class="rango-content">
+                            <input type="radio" id="demeritos_19_36" name="rango_demeritos" value="3" class="rango-radio">
+                            <label for="demeritos_19_36" class="rango-label">De 19 a 36</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-demeritos-item" data-value="2">
+                        <div class="rango-content">
+                            <input type="radio" id="demeritos_37_54" name="rango_demeritos" value="2" class="rango-radio">
+                            <label for="demeritos_37_54" class="rango-label">De 37 a 54</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-demeritos-item" data-value="1">
+                        <div class="rango-content">
+                            <input type="radio" id="demeritos_55_74" name="rango_demeritos" value="1" class="rango-radio">
+                            <label for="demeritos_55_74" class="rango-label">De 55 a 74</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-demeritos-item" data-value="0">
+                        <div class="rango-content">
+                            <input type="radio" id="demeritos_75_100" name="rango_demeritos" value="0" class="rango-radio">
+                            <label for="demeritos_75_100" class="rango-label">De 75 a 100</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de puntos -->
+            <div class="col-md-4">
+                <div class="puntos-header mb-3">
+                    <h6 class="text-center">
+                        <i class="bi bi-award me-2"></i>
+                        Puntos
+                    </h6>
+                </div>
+                <div class="puntos-demeritos-container">
+                    <div class="punto-demeritos-item" data-value="5">
+                        <div class="punto-demeritos-box">5</div>
+                    </div>
+                    <div class="punto-demeritos-item" data-value="4">
+                        <div class="punto-demeritos-box">4</div>
+                    </div>
+                    <div class="punto-demeritos-item" data-value="3">
+                        <div class="punto-demeritos-box">3</div>
+                    </div>
+                    <div class="punto-demeritos-item" data-value="2">
+                        <div class="punto-demeritos-box">2</div>
+                    </div>
+                    <div class="punto-demeritos-item" data-value="1">
+                        <div class="punto-demeritos-box">1</div>
+                    </div>
+                    <div class="punto-demeritos-item" data-value="0">
+                        <div class="punto-demeritos-box">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicador de selección actual -->
+        <div class="seleccion-actual mt-3">
+            <div class="alert alert-info d-none" id="demeritos_seleccionado">
+                <i class="bi bi-info-circle me-2"></i>
+                <span id="demeritos_texto">Seleccione un rango de deméritos</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- D. Arrestos -->
+<div class="subsection mb-4">
+    <div class="subsection-header mb-3">
+        <h5 class="subsection-title">
+            <i class="bi bi-person-x me-2"></i>
+            D. Arrestos
+        </h5>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instructions-box mb-4">
+        <div class="instruction-text">
+            Verifique cuidadosamente en archivos físicos y magnéticos, la cantidad de arrestos impuestos al 
+            especialista, durante el periodo de evaluación; luego, marque con una X el rango en donde se 
+            encuentre la cantidad encontrada.
+        </div>
+    </div>
+
+    <!-- Contenedor principal de arrestos -->
+    <div class="arrestos-container">
+        <div class="row">
+            <!-- Columna de rangos -->
+            <div class="col-md-8">
+                <div class="rangos-header mb-3">
+                    <h6><i class="bi bi-list-ol me-2"></i>Rango</h6>
+                </div>
+                <div class="rangos-arrestos-container">
+                    <input type="hidden" id="bol_arrestos" name="bol_arrestos">
+                    
+                    <div class="rango-arrestos-item" data-value="5">
+                        <div class="rango-content">
+                            <input type="radio" id="arrestos_0" name="rango_arrestos" value="5" class="rango-radio">
+                            <label for="arrestos_0" class="rango-label">0</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-arrestos-item" data-value="4">
+                        <div class="rango-content">
+                            <input type="radio" id="arrestos_1_5" name="rango_arrestos" value="4" class="rango-radio">
+                            <label for="arrestos_1_5" class="rango-label">De 1 a 5</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-arrestos-item" data-value="3">
+                        <div class="rango-content">
+                            <input type="radio" id="arrestos_6_10" name="rango_arrestos" value="3" class="rango-radio">
+                            <label for="arrestos_6_10" class="rango-label">De 6 a 10</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-arrestos-item" data-value="2">
+                        <div class="rango-content">
+                            <input type="radio" id="arrestos_11_15" name="rango_arrestos" value="2" class="rango-radio">
+                            <label for="arrestos_11_15" class="rango-label">De 11 a 15</label>
+                        </div>
+                    </div>
+
+                    <div class="rango-arrestos-item" data-value="1">
+                        <div class="rango-content">
+                            <input type="radio" id="arrestos_16_mas" name="rango_arrestos" value="1" class="rango-radio">
+                            <label for="arrestos_16_mas" class="rango-label">De 16 a más</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de puntos -->
+            <div class="col-md-4">
+                <div class="puntos-header mb-3">
+                    <h6 class="text-center">
+                        <i class="bi bi-award me-2"></i>
+                        Puntos
+                    </h6>
+                </div>
+                <div class="puntos-arrestos-container">
+                    <div class="punto-arrestos-item" data-value="5">
+                        <div class="punto-arrestos-box">5</div>
+                    </div>
+                    <div class="punto-arrestos-item" data-value="4">
+                        <div class="punto-arrestos-box">4</div>
+                    </div>
+                    <div class="punto-arrestos-item" data-value="3">
+                        <div class="punto-arrestos-box">3</div>
+                    </div>
+                    <div class="punto-arrestos-item" data-value="2">
+                        <div class="punto-arrestos-box">2</div>
+                    </div>
+                    <div class="punto-arrestos-item" data-value="1">
+                        <div class="punto-arrestos-box">1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicador de selección actual -->
+        <div class="seleccion-actual mt-3">
+            <div class="alert alert-info d-none" id="arrestos_seleccionado">
+                <i class="bi bi-info-circle me-2"></i>
+                <span id="arrestos_texto">Seleccione un rango de arrestos</span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 :root {
     --primary-blue: #1e3a8a;
@@ -1219,6 +1441,144 @@ body {
 
     .pafe-input {
         width: 100px;
+    }
+}
+
+/* Estilos para Deméritos y Arrestos */
+.demeritos-container,
+.arrestos-container {
+    border: 2px solid #dc2626;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.rangos-demeritos-container,
+.rangos-arrestos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rango-demeritos-item,
+.rango-arrestos-item {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: white;
+    cursor: pointer;
+}
+
+.rango-demeritos-item:hover,
+.rango-arrestos-item:hover {
+    border-color: #dc2626;
+    transform: translateX(3px);
+}
+
+.rango-demeritos-item.selected,
+.rango-arrestos-item.selected {
+    border-color: #dc2626;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.rango-demeritos-item .rango-content,
+.rango-arrestos-item .rango-content {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.rango-demeritos-item .rango-radio,
+.rango-arrestos-item .rango-radio {
+    margin-right: 0.75rem;
+    width: 16px;
+    height: 16px;
+    accent-color: #dc2626;
+    cursor: pointer;
+}
+
+.rango-demeritos-item .rango-label,
+.rango-arrestos-item .rango-label {
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    margin: 0;
+    user-select: none;
+}
+
+.rango-demeritos-item.selected .rango-label,
+.rango-arrestos-item.selected .rango-label {
+    color: #dc2626;
+}
+
+.puntos-demeritos-container,
+.puntos-arrestos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.punto-demeritos-item,
+.punto-arrestos-item {
+    transition: all 0.3s ease;
+}
+
+.punto-demeritos-box,
+.punto-arrestos-box {
+    width: 50px;
+    height: 42px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #6b7280;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.punto-demeritos-item.selected .punto-demeritos-box,
+.punto-arrestos-item.selected .punto-arrestos-box {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+}
+
+#demeritos_seleccionado,
+#arrestos_seleccionado {
+    border: none;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(254, 226, 226, 0.8) 100%);
+    border-left: 4px solid #dc2626;
+    color: #dc2626;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .demeritos-container,
+    .arrestos-container {
+        padding: 1rem;
+    }
+    
+    .rango-content {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .rango-label {
+        font-size: 0.9rem;
+    }
+    
+    .punto-demeritos-box,
+    .punto-arrestos-box {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
 }
 </style>

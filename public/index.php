@@ -32,8 +32,9 @@ $router->post('/API/evaluacionformulario/guardar', [EvaluacionFormularioControll
 $router->get('/API/evaluacionformulario/eliminar', [EvaluacionFormularioController::class, 'eliminarEvaluacionAPI']);
 $router->get('/API/evaluacionformulario/obtenerPafesEvaluado', [EvaluacionFormularioController::class, 'obtenerPafesEvaluadoAPI']);
 
-
-
+// DEMERITOS Y ARRESTOS
+$router->get('/API/evaluacionformulario/obtenerDemeritosEvaluado', [EvaluacionFormularioController::class, 'obtenerDemeritosEvaluadoAPI']);
+$router->get('/API/evaluacionformulario/obtenerArrestosEvaluado', [EvaluacionFormularioController::class, 'obtenerArrestosEvaluadoAPI']);
 
 
 

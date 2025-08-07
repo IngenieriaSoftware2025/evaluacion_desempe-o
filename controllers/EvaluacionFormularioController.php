@@ -59,7 +59,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Datos del evaluado obtenidos correctamente',
                 'data' => $especialista
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -105,7 +104,7 @@ class EvaluacionFormularioController extends ActiveRecord
             // Formatear nombre completo y validar tiempo
             $evaluador = $data[0];
             $evaluador['nombre_completo'] = self::formatearNombreCompleto($evaluador);
-            
+
             // Validar tiempo mínimo
             $validacion = self::validarTiempoEvaluador($catalogo);
             $evaluador['puede_evaluar'] = $validacion['validacion'] === 'PUEDE_EVALUAR';
@@ -117,7 +116,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Datos del evaluador obtenidos correctamente',
                 'data' => $evaluador
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -143,7 +141,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Validación realizada',
                 'data' => $validacion
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -216,7 +213,6 @@ class EvaluacionFormularioController extends ActiveRecord
                     'mensaje' => 'Error al guardar la evaluación'
                 ]);
             }
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -226,6 +222,247 @@ class EvaluacionFormularioController extends ActiveRecord
             ]);
         }
     }
+
+    // API para eliminar evaluación
+    public static function eliminarEvaluacionAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo_evaluado = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+            $anio = filter_var($_GET['anio'], FILTER_SANITIZE_NUMBER_INT) ?? 2025;
+
+            $sql = "DELETE FROM eva_boleta 
+                    WHERE bol_cat_evaluado = {$catalogo_evaluado} 
+                    AND bol_anio = {$anio}";
+
+            self::SQL($sql);
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Evaluación eliminada correctamente'
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al eliminar la evaluación',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    // API para obtener las últimas 4 evaluaciones PAFE del evaluado
+    public static function obtenerPafesEvaluadoAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+            $anio_actual = 2025; // Año fijo según requerimientos
+            $mes_actual = 8; // Agosto
+            
+            // Calcular los últimos 4 meses
+            $meses = [];
+            for ($i = 3; $i >= 0; $i--) {
+                $mes = $mes_actual - $i;
+                $anio = $anio_actual;
+                
+                // Ajustar si el mes es menor a 1 (año anterior)
+                if ($mes <= 0) {
+                    $mes += 12;
+                    $anio--;
+                }
+                
+                $meses[] = [
+                    'mes' => $mes,
+                    'anio' => $anio,
+                    'nombre' => self::obtenerNombreMes($mes)
+                ];
+            }
+
+            $evaluaciones = [];
+            $puntajes = [];
+
+            // Consultar cada mes
+            foreach ($meses as $index => $periodo) {
+                // Calcular primer y último día del mes correctamente
+                $primer_dia = 1;
+                $ultimo_dia = cal_days_in_month(CAL_GREGORIAN, $periodo['mes'], $periodo['anio']);
+                
+                // Formato de fecha para Informix (año-mes-día)
+                $fecha_inicio = sprintf("%04d-%02d-%02d", $periodo['anio'], $periodo['mes'], $primer_dia);
+                $fecha_fin = sprintf("%04d-%02d-%02d", $periodo['anio'], $periodo['mes'], $ultimo_dia);
+
+                $sql = "SELECT not_promedio, not_fecha 
+                        FROM opaf_notas 
+                        WHERE not_catalogo = {$catalogo} 
+                        AND not_fecha >= '{$fecha_inicio}' 
+                        AND not_fecha <= '{$fecha_fin}'
+                        ORDER BY not_fecha DESC 
+                        LIMIT 1";
+
+                $resultado = self::fetchArray($sql);
+
+                if (!empty($resultado)) {
+                    $puntaje = (int) $resultado[0]['not_promedio'];
+                    $evaluaciones[] = [
+                        'mes' => $periodo['nombre'],
+                        'puntaje' => $puntaje,
+                        'fecha' => $resultado[0]['not_fecha']
+                    ];
+                    $puntajes[] = $puntaje;
+                } else {
+                    // No hay PAFE en este mes
+                    $evaluaciones[] = [
+                        'mes' => $periodo['nombre'],
+                        'puntaje' => 0,
+                        'fecha' => null
+                    ];
+                    $puntajes[] = 0;
+                }
+            }
+
+            // Calcular promedio
+            $promedio = array_sum($puntajes) / 4;
+            
+            // Determinar rango de puntos PAFE
+            $puntos_pafe = self::calcularPuntosPafe($promedio);
+
+            $respuesta = [
+                'evaluaciones' => $evaluaciones,
+                'puntajes' => $puntajes, // [eva1, eva2, eva3, eva4]
+                'promedio' => round($promedio, 2),
+                'puntos_pafe' => $puntos_pafe,
+                'rango_texto' => self::obtenerTextoRangoPafe($puntos_pafe),
+                'meses_consultados' => array_column($meses, 'nombre'),
+                'debug_info' => [
+                    'catalogo' => $catalogo,
+                    'meses_calculados' => $meses,
+                    'consultas_ejecutadas' => count($meses)
+                ]
+            ];
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Evaluaciones PAFE obtenidas correctamente',
+                'data' => $respuesta
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener evaluaciones PAFE',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    // API para obtener deméritos del evaluado
+    public static function obtenerDemeritosEvaluadoAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+
+            $sql = "SELECT est_demeritos 
+                    FROM psan_estadistica 
+                    WHERE est_catalogo = {$catalogo}
+                    AND est_situacion = 1";
+
+            $data = self::fetchArray($sql);
+
+            if (empty($data)) {
+                // Si no hay registro, asumimos 0 deméritos
+                $demeritos = 0;
+            } else {
+                $demeritos = (int) $data[0]['est_demeritos'];
+            }
+
+            // Calcular puntos según los deméritos
+            $puntos_demeritos = self::calcularPuntosDemeritos($demeritos);
+
+            $respuesta = [
+                'demeritos' => $demeritos,
+                'puntos' => $puntos_demeritos,
+                'rango_texto' => self::obtenerTextoRangoDemeritos($puntos_demeritos),
+                'debug_info' => [
+                    'catalogo' => $catalogo,
+                    'sql_ejecutado' => $sql
+                ]
+            ];
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Deméritos obtenidos correctamente',
+                'data' => $respuesta
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener deméritos',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    // API para obtener arrestos del evaluado
+    public static function obtenerArrestosEvaluadoAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+            $anio_actual = 2025; // Año fijo según requerimientos
+
+           $sql = "SELECT COUNT(det_sancion) as total_arrestos
+        FROM psan_detalle 
+        WHERE det_catalogo = {$catalogo}
+        AND det_fecha >= '{$anio_actual}-01-01'
+        AND det_fecha <= '{$anio_actual}-12-31'
+        AND det_status = 0";
+
+            $data = self::fetchArray($sql);
+
+            $total_arrestos = (int) ($data[0]['total_arrestos'] ?? 0);
+
+            // Calcular puntos según los arrestos
+            $puntos_arrestos = self::calcularPuntosArrestos($total_arrestos);
+
+            $respuesta = [
+                'arrestos' => $total_arrestos,
+                'puntos' => $puntos_arrestos,
+                'rango_texto' => self::obtenerTextoRangoArrestos($puntos_arrestos),
+                'anio_consultado' => $anio_actual,
+                'debug_info' => [
+                    'catalogo' => $catalogo,
+                    'sql_ejecutado' => $sql
+                ]
+            ];
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Arrestos obtenidos correctamente',
+                'data' => $respuesta
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener arrestos',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    // =============================================================================
+    // FUNCIONES PRIVADAS DE UTILIDAD
+    // =============================================================================
 
     // Función privada para validar tiempo del evaluador
     private static function validarTiempoEvaluador($catalogo)
@@ -250,7 +487,7 @@ class EvaluacionFormularioController extends ActiveRecord
         }
 
         $resultado = $data[0];
-        
+
         if ($resultado['validacion'] === 'PUEDE_EVALUAR') {
             $resultado['mensaje'] = 'El evaluador cumple con el tiempo mínimo requerido';
         } else {
@@ -286,177 +523,93 @@ class EvaluacionFormularioController extends ActiveRecord
         return trim($nombre);
     }
 
-    // API para eliminar evaluación
-    public static function eliminarEvaluacionAPI()
+    // Calcular puntos PAFE según el promedio
+    private static function calcularPuntosPafe($promedio)
     {
-        getHeadersApi();
-        try {
-            $catalogo_evaluado = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-            $anio = filter_var($_GET['anio'], FILTER_SANITIZE_NUMBER_INT) ?? 2025;
-
-            $sql = "DELETE FROM eva_boleta 
-                    WHERE bol_cat_evaluado = {$catalogo_evaluado} 
-                    AND bol_anio = {$anio}";
-            
-            self::SQL($sql);
-
-            http_response_code(200);
-            echo json_encode([
-                'codigo' => 1,
-                'mensaje' => 'Evaluación eliminada correctamente'
-            ]);
-
-        } catch (Exception $e) {
-            http_response_code(400);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'Error al eliminar la evaluación',
-                'detalle' => $e->getMessage()
-            ]);
-        }
+        if ($promedio >= 91) return 5;
+        if ($promedio >= 81) return 4;
+        if ($promedio >= 71) return 3;
+        if ($promedio >= 60) return 2;
+        return 0;
     }
 
-
-
-
-
-
-
-    public static function obtenerPafesEvaluadoAPI()
-{
-    getHeadersApi();
-    try {
-        $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-        $anio_actual = 2025; // Año fijo según requerimientos
-        $mes_actual = 8; // Agosto
+    // Función privada para calcular puntos de deméritos
+    private static function calcularPuntosDemeritos($demeritos)
+    {
+        if ($demeritos == 0) return 5;
+        if ($demeritos >= 1 && $demeritos <= 18) return 4;
+        if ($demeritos >= 19 && $demeritos <= 36) return 3;
+        if ($demeritos >= 37 && $demeritos <= 54) return 2;
+        if ($demeritos >= 55 && $demeritos <= 74) return 1;
+        if ($demeritos >= 75) return 0;
         
-        // Calcular los últimos 4 meses
-        $meses = [];
-        for ($i = 3; $i >= 0; $i--) {
-            $mes = $mes_actual - $i;
-            $anio = $anio_actual;
-            
-            // Ajustar si el mes es menor a 1 (año anterior)
-            if ($mes <= 0) {
-                $mes += 12;
-                $anio--;
-            }
-            
-            $meses[] = [
-                'mes' => str_pad($mes, 2, '0', STR_PAD_LEFT),
-                'anio' => $anio,
-                'nombre' => self::obtenerNombreMes($mes)
-            ];
-        }
+        return 0; // Fallback
+    }
 
-        $evaluaciones = [];
-        $puntajes = [];
-
-        // Consultar cada mes
-        foreach ($meses as $index => $periodo) {
-            $fecha_inicio = "{$periodo['anio']}-{$periodo['mes']}-01";
-            $fecha_fin = "{$periodo['anio']}-{$periodo['mes']}-31";
-
-            $sql = "SELECT not_promedio, not_fecha 
-                    FROM opaf_notas 
-                    WHERE not_catalogo = {$catalogo} 
-                    AND not_fecha >= '{$fecha_inicio}' 
-                    AND not_fecha <= '{$fecha_fin}'
-                    ORDER BY not_fecha DESC 
-                    LIMIT 1";
-
-            $resultado = self::fetchArray($sql);
-
-            if (!empty($resultado)) {
-                $puntaje = (int) $resultado[0]['not_promedio'];
-                $evaluaciones[] = [
-                    'mes' => $periodo['nombre'],
-                    'puntaje' => $puntaje,
-                    'fecha' => $resultado[0]['not_fecha']
-                ];
-                $puntajes[] = $puntaje;
-            } else {
-                // No hay PAFE en este mes
-                $evaluaciones[] = [
-                    'mes' => $periodo['nombre'],
-                    'puntaje' => 0,
-                    'fecha' => null
-                ];
-                $puntajes[] = 0;
-            }
-        }
-
-        // Calcular promedio
-        $promedio = array_sum($puntajes) / 4;
+    // Función privada para calcular puntos de arrestos
+    private static function calcularPuntosArrestos($arrestos)
+    {
+        if ($arrestos == 0) return 5;
+        if ($arrestos >= 1 && $arrestos <= 5) return 4;
+        if ($arrestos >= 6 && $arrestos <= 10) return 3;
+        if ($arrestos >= 11 && $arrestos <= 15) return 2;
+        if ($arrestos >= 16) return 1;
         
-        // Determinar rango de puntos PAFE
-        $puntos_pafe = self::calcularPuntosPafe($promedio);
+        return 1; // Fallback
+    }
 
-        $respuesta = [
-            'evaluaciones' => $evaluaciones,
-            'puntajes' => $puntajes, // [eva1, eva2, eva3, eva4]
-            'promedio' => round($promedio, 2),
-            'puntos_pafe' => $puntos_pafe,
-            'rango_texto' => self::obtenerTextoRango($puntos_pafe),
-            'meses_consultados' => array_column($meses, 'nombre')
+    // Obtener texto descriptivo del rango PAFE
+    private static function obtenerTextoRangoPafe($puntos)
+    {
+        $rangos = [
+            0 => 'De 0 a 59 puntos',
+            2 => 'De 60 a 70 puntos', 
+            3 => 'De 71 a 80 puntos',
+            4 => 'De 81 a 90 puntos',
+            5 => 'De 91 a más puntos'
         ];
-
-        http_response_code(200);
-        echo json_encode([
-            'codigo' => 1,
-            'mensaje' => 'Evaluaciones PAFE obtenidas correctamente',
-            'data' => $respuesta
-        ]);
-
-    } catch (Exception $e) {
-        http_response_code(400);
-        echo json_encode([
-            'codigo' => 0,
-            'mensaje' => 'Error al obtener evaluaciones PAFE',
-            'detalle' => $e->getMessage()
-        ]);
+        
+        return $rangos[$puntos] ?? 'Rango no definido';
     }
-}
 
+    // Función privada para obtener texto descriptivo del rango de deméritos
+    private static function obtenerTextoRangoDemeritos($puntos)
+    {
+        $rangos = [
+            5 => '0 deméritos - 5 puntos',
+            4 => 'De 1 a 18 deméritos - 4 puntos',
+            3 => 'De 19 a 36 deméritos - 3 puntos',
+            2 => 'De 37 a 54 deméritos - 2 puntos',
+            1 => 'De 55 a 74 deméritos - 1 punto',
+            0 => 'De 75 a 100 deméritos - 0 puntos'
+        ];
+        
+        return $rangos[$puntos] ?? 'Rango no definido';
+    }
 
- // Calcular puntos PAFE según el promedio
+    // Función privada para obtener texto descriptivo del rango de arrestos
+    private static function obtenerTextoRangoArrestos($puntos)
+    {
+        $rangos = [
+            5 => '0 arrestos - 5 puntos',
+            4 => 'De 1 a 5 arrestos - 4 puntos',
+            3 => 'De 6 a 10 arrestos - 3 puntos',
+            2 => 'De 11 a 15 arrestos - 2 puntos',
+            1 => 'De 16 a más arrestos - 1 punto'
+        ];
+        
+        return $rangos[$puntos] ?? 'Rango no definido';
+    }
 
-private static function calcularPuntosPafe($promedio)
-{
-    if ($promedio >= 91) return 5;
-    if ($promedio >= 81) return 4;
-    if ($promedio >= 71) return 3;
-    if ($promedio >= 60) return 2;
-    return 0;
-}
-
-
-  //Obtener texto descriptivo del rango
-
-private static function obtenerTextoRango($puntos)
-{
-    $rangos = [
-        0 => 'De 0 a 59 puntos',
-        2 => 'De 60 a 70 puntos', 
-        3 => 'De 71 a 80 puntos',
-        4 => 'De 81 a 90 puntos',
-        5 => 'De 91 a más puntos'
-    ];
-    
-    return $rangos[$puntos] ?? 'Rango no definido';
-}
-
-
-  //Obtener nombre del mes
-
-private static function obtenerNombreMes($mes)
-{
-    $meses = [
-        1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-        5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-        9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-    ];
-    
-    return $meses[$mes] ?? 'Mes inválido';
-}
+    // Obtener nombre del mes
+    private static function obtenerNombreMes($mes)
+    {
+        $meses = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+        
+        return $meses[$mes] ?? 'Mes inválido';
+    }
 }
