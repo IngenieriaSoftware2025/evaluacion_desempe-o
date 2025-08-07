@@ -36,7 +36,8 @@ $router->get('/API/evaluacionformulario/obtenerPafesEvaluado', [EvaluacionFormul
 $router->get('/API/evaluacionformulario/obtenerDemeritosEvaluado', [EvaluacionFormularioController::class, 'obtenerDemeritosEvaluadoAPI']);
 $router->get('/API/evaluacionformulario/obtenerArrestosEvaluado', [EvaluacionFormularioController::class, 'obtenerArrestosEvaluadoAPI']);
 
-
+// MÉRITOS
+$router->get('/API/evaluacionformulario/obtenerMeritos', [EvaluacionFormularioController::class, 'obtenerMeritosAPI']);
 
 
 

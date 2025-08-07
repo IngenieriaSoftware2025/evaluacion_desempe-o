@@ -612,4 +612,50 @@ class EvaluacionFormularioController extends ActiveRecord
         
         return $meses[$mes] ?? 'Mes inválido';
     }
+
+
+
+
+
+    // API para obtener méritos del evaluado
+    public static function obtenerMeritosAPI()
+    {
+        getHeadersApi();
+        try {
+            $nota = filter_var($_GET['nota'], FILTER_SANITIZE_NUMBER_INT);
+
+            if (!in_array($nota, [2, 3])) {
+                http_response_code(400);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'La nota debe ser 2 o 3'
+                ]);
+                return;
+            }
+
+            $sql = "SELECT mer_codigo, mer_descripcion, mer_nota 
+                    FROM eva_meritos 
+                    WHERE mer_nota = {$nota}
+                    ORDER BY mer_descripcion ASC";
+
+            $data = self::fetchArray($sql);
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Méritos obtenidos correctamente',
+                'data' => $data,
+                'nota' => $nota,
+                'total_meritos' => count($data)
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener méritos',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
 }

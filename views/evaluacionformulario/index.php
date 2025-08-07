@@ -694,6 +694,131 @@
     </div>
 </div>
 
+
+
+<!-- E. Méritos -->
+<div class="subsection mb-4">
+    <div class="subsection-header mb-3">
+        <h5 class="subsection-title">
+            <i class="bi bi-award me-2"></i>
+            E. Méritos
+        </h5>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instructions-box mb-4">
+        <div class="instruction-text">
+            Se refiere a las acciones sobresalientes, extraordinarias y ejemplares que el evaluado 
+            halla realizado en beneficio de su unidad o de la institución armada, durante el año de 
+            evaluación. En los cuadros de la derecha el evaluador deberá escribir los méritos del evaluado 
+            iniciando con la fecha en que se ejecutó la acción. Asimismo, adjuntar a esta hoja, la 
+            constancia respectiva.
+        </div>
+    </div>
+
+    <!-- Contenedor principal de méritos -->
+    <div class="meritos-container">
+        <div class="row">
+            <!-- Columna de selecciones -->
+            <div class="col-md-8">
+                <!-- Mérito 1 (3 puntos) -->
+                <div class="merito-item mb-4">
+                    <div class="merito-header">
+                        <h6><i class="bi bi-star-fill me-2"></i>Mérito 1</h6>
+                        <small class="text-muted">Seleccione todas las condecoraciones aplicables</small>
+                    </div>
+                    
+                    <select class="form-control merito-select" id="merito_1" name="meritos_3[]" 
+                            multiple size="6" data-nota="3">
+                        <option value="">Cargando méritos...</option>
+                    </select>
+                    
+                    <div class="merito-controls mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                onclick="marcarTodosLosMemeritos('merito_1')">
+                            <i class="bi bi-check-all me-1"></i>Marcar Todas
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                onclick="limpiarMeritos('merito_1')">
+                            <i class="bi bi-x-circle me-1"></i>Limpiar
+                        </button>
+                        <span class="badge bg-info ms-2" id="contador_merito_1">0 seleccionados</span>
+                    </div>
+                </div>
+
+                <!-- Mérito 2 (2 puntos) -->
+                <div class="merito-item mb-4">
+                    <div class="merito-header">
+                        <h6><i class="bi bi-star me-2"></i>Mérito 2</h6>
+                        <small class="text-muted">Seleccione todas las condecoraciones aplicables</small>
+                    </div>
+                    
+                    <select class="form-control merito-select" id="merito_2" name="meritos_2[]" 
+                            multiple size="6" data-nota="2">
+                        <option value="">Cargando méritos...</option>
+                    </select>
+                    
+                    <div class="merito-controls mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                onclick="marcarTodosLosMemeritos('merito_2')">
+                            <i class="bi bi-check-all me-1"></i>Marcar Todas
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                onclick="limpiarMeritos('merito_2')">
+                            <i class="bi bi-x-circle me-1"></i>Limpiar
+                        </button>
+                        <span class="badge bg-info ms-2" id="contador_merito_2">0 seleccionados</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de puntos -->
+            <div class="col-md-4">
+                <div class="puntos-header mb-3">
+                    <h6 class="text-center">
+                        <i class="bi bi-award me-2"></i>
+                        Puntos
+                    </h6>
+                </div>
+                
+                <div class="puntos-meritos-container">
+                    <!-- Mérito 1 - 3 puntos -->
+                    <div class="punto-merito-item" data-merito="1">
+                        <div class="punto-merito-box merito-3-puntos">
+                            3
+                        </div>
+                        <small class="text-muted d-block text-center mt-1">Por cada selección</small>
+                    </div>
+                    
+                    <!-- Espaciador -->
+                    <div class="punto-spacer my-4"></div>
+                    
+                    <!-- Mérito 2 - 2 puntos -->
+                    <div class="punto-merito-item" data-merito="2">
+                        <div class="punto-merito-box merito-2-puntos">
+                            2
+                        </div>
+                        <small class="text-muted d-block text-center mt-1">Por cada selección</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de méritos seleccionados -->
+        <div class="meritos-resumen mt-4">
+            <div class="alert alert-info" id="resumen_meritos">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Total de Méritos:</strong> <span id="total_puntos_meritos">0</span> puntos
+                <div id="detalle_meritos" class="mt-2"></div>
+            </div>
+        </div>
+
+        <!-- Campos ocultos para almacenar los valores -->
+        <input type="hidden" id="bol_meritos_total" name="bol_meritos_total" value="0">
+        <input type="hidden" id="bol_meritos_detalle" name="bol_meritos_detalle" value="">
+    </div>
+</div>
+
 <style>
 :root {
     --primary-blue: #1e3a8a;
@@ -1581,6 +1706,350 @@ body {
         font-size: 1rem;
     }
 }
+
+
+
+
+.meritos-container {
+    border: 2px solid #059669;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Mérito Items */
+.merito-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(255, 255, 255, 0.8) 100%);
+    transition: all 0.3s ease;
+}
+
+.merito-item:hover {
+    border-color: #10b981;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+}
+
+.merito-header h6 {
+    color: #10b981;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.merito-header small {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Select de Méritos */
+.merito-select {
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    background: white;
+    transition: all 0.3s ease;
+    min-height: 150px;
+}
+
+.merito-select:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+    outline: none;
+}
+
+.merito-select option {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.2s ease;
+}
+
+.merito-select option:hover {
+    background-color: #f0fdf4;
+}
+
+.merito-select option:checked {
+    background-color: #10b981;
+    color: white;
+    font-weight: 600;
+}
+
+/* Controles de Mérito */
+.merito-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.merito-controls .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.merito-controls .btn:hover {
+    transform: translateY(-1px);
+}
+
+.merito-controls .badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+}
+
+/* Puntos de Méritos */
+.puntos-header h6 {
+    color: #10b981;
+    font-weight: 700;
+    border-bottom: 2px solid #10b981;
+    padding-bottom: 0.5rem;
+}
+
+.puntos-meritos-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.punto-merito-item {
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.punto-merito-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: white;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.punto-merito-box::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 12px;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.punto-merito-item:hover .punto-merito-box::before {
+    opacity: 1;
+}
+
+/* Mérito 3 puntos */
+.merito-3-puntos {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.punto-merito-item:hover .merito-3-puntos {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+}
+
+/* Mérito 2 puntos */
+.merito-2-puntos {
+    background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.punto-merito-item:hover .merito-2-puntos {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+/* Espaciador entre puntos */
+.punto-spacer {
+    height: 2rem;
+    position: relative;
+}
+
+.punto-spacer::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, #d1d5db 50%, transparent 100%);
+}
+
+/* Resumen de Méritos */
+.meritos-resumen {
+    border-top: 1px solid rgba(16, 185, 129, 0.2);
+    padding-top: 1.5rem;
+}
+
+#resumen_meritos {
+    border: none;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(219, 234, 254, 0.8) 100%);
+    border-left: 4px solid #10b981;
+    color: #065f46;
+    font-weight: 500;
+}
+
+#total_puntos_meritos {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+#detalle_meritos {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+#detalle_meritos .merito-detalle-item {
+    display: inline-block;
+    background: rgba(16, 185, 129, 0.1);
+    color: #065f46;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin: 0.2rem;
+    font-size: 0.8rem;
+}
+
+/* Estados especiales */
+.merito-select:disabled {
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+.merito-select:disabled option {
+    color: #9ca3af;
+}
+
+.merito-item.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.merito-item.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #10b981;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Animaciones */
+.merito-item {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .meritos-container {
+        padding: 1rem;
+    }
+    
+    .merito-item {
+        padding: 0.75rem;
+    }
+    
+    .merito-select {
+        min-height: 120px;
+        font-size: 0.85rem;
+    }
+    
+    .punto-merito-box {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .merito-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    
+    .merito-controls .btn {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+    
+    #detalle_meritos .merito-detalle-item {
+        font-size: 0.75rem;
+        padding: 0.1rem 0.3rem;
+    }
+}
+
+/* Estados de validación */
+.merito-select.is-invalid {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.15);
+}
+
+.merito-select.is-valid {
+    border-color: #10b981;
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+}
+
+/* Scroll personalizado para select */
+.merito-select::-webkit-scrollbar {
+    width: 8px;
+}
+
+.merito-select::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.merito-select::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 4px;
+}
+
+.merito-select::-webkit-scrollbar-thumb:hover {
+    background: #059669;
+}
+
+
+
+
 </style>
 
 <script src="<?= asset('build/js/evaluacionformulario/index.js') ?>"></script>

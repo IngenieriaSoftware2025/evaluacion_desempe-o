@@ -126,6 +126,24 @@ const arrestosTextos = {
 let datosArrestosCargados = false;
 
 // =============================================================================
+// MÉRITOS - Elementos y Variables
+// =============================================================================
+const merito1Select = document.getElementById('merito_1');
+const merito2Select = document.getElementById('merito_2');
+const totalPuntosMeritos = document.getElementById('total_puntos_meritos');
+const detalleMeritos = document.getElementById('detalle_meritos');
+const bolMeritosTotal = document.getElementById('bol_meritos_total');
+const bolMeritosDetalle = document.getElementById('bol_meritos_detalle');
+const contadorMerito1 = document.getElementById('contador_merito_1');
+const contadorMerito2 = document.getElementById('contador_merito_2');
+
+// Variables de control méritos
+let datosMeritosNota3Cargados = false;
+let datosMeritosNota2Cargados = false;
+let meritosNota3 = [];
+let meritosNota2 = [];
+
+// =============================================================================
 // FUNCIONES GENERALES
 // =============================================================================
 
@@ -231,6 +249,10 @@ const limpiarDatosDemeritosArrestos = () => {
     arrestosRadios.forEach(radio => radio.checked = false);
     actualizarArrestosSeleccionado(null);
     datosArrestosCargados = false;
+    
+    // ⭐ NUEVAS LÍNEAS - Habilitar controles al limpiar
+    habilitarControlesDemeritos();
+    habilitarControlesArrestos();
 }
 
 /**
@@ -319,6 +341,9 @@ const cargarDatosEvaluado = async () => {
             // ⭐ NUEVAS LÍNEAS - Cargar automáticamente deméritos y arrestos
             await cargarDatosDemeritos(catalogoEvaluado);
             await cargarDatosArrestos(catalogoEvaluado);
+            
+            // ⭐ INTEGRACIÓN - Cargar méritos
+            await cargarTodosLosMeritos();
             
         } else {
             await Swal.fire({
@@ -467,6 +492,7 @@ const cargarDatosDemeritos = async (catalogo) => {
                 radioDemeritos.checked = true;
                 actualizarDemeritosSeleccionado(data.puntos.toString());
                 datosDemeritosCargados = true;
+                // ⭐ NUEVA LÍNEA - Deshabilitar controles después de cargar
                 deshabilitarControlesDemeritos();
             }
 
@@ -509,6 +535,7 @@ const cargarDatosArrestos = async (catalogo) => {
                 radioArrestos.checked = true;
                 actualizarArrestosSeleccionado(data.puntos.toString());
                 datosArrestosCargados = true;
+                // ⭐ NUEVA LÍNEA - Deshabilitar controles después de cargar
                 deshabilitarControlesArrestos();
             }
 
@@ -524,6 +551,96 @@ const cargarDatosArrestos = async (catalogo) => {
         console.error('❌ Error al cargar datos de arrestos:', error);
         // En caso de error, no hacer nada para no romper el formulario
     }
+}
+
+// =============================================================================
+// FUNCIONES DE CARGA DE MÉRITOS
+// =============================================================================
+
+/**
+ * Cargar méritos por nota (2 o 3)
+ */
+const cargarMeritos = async (nota) => {
+    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerMeritos?nota=${nota}`;
+    const config = {
+        method: 'GET'
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje, data } = datos;
+
+        if (codigo === 1) {
+            if (nota === 3) {
+                meritosNota3 = data;
+                llenarSelectMeritos('merito_1', data, 3);
+                datosMeritosNota3Cargados = true;
+                console.log(`✅ Méritos nota 3 cargados: ${data.length} opciones`);
+            } else if (nota === 2) {
+                meritosNota2 = data;
+                llenarSelectMeritos('merito_2', data, 2);
+                datosMeritosNota2Cargados = true;
+                console.log(`✅ Méritos nota 2 cargados: ${data.length} opciones`);
+            }
+        } else {
+            console.warn(`⚠️ No se pudieron cargar los méritos nota ${nota}:`, mensaje);
+            if (nota === 3) {
+                merito1Select.innerHTML = '<option value="">No hay méritos disponibles</option>';
+            } else {
+                merito2Select.innerHTML = '<option value="">No hay méritos disponibles</option>';
+            }
+        }
+
+    } catch (error) {
+        console.error(`❌ Error al cargar méritos nota ${nota}:`, error);
+        if (nota === 3) {
+            merito1Select.innerHTML = '<option value="">Error al cargar méritos</option>';
+        } else {
+            merito2Select.innerHTML = '<option value="">Error al cargar méritos</option>';
+        }
+    }
+}
+
+/**
+ * Llenar select con las opciones de méritos
+ */
+const llenarSelectMeritos = (selectId, meritos, nota) => {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    // Limpiar opciones anteriores
+    select.innerHTML = '';
+
+    // Agregar opción por defecto
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Seleccione méritos aplicables --';
+    defaultOption.disabled = true;
+    select.appendChild(defaultOption);
+
+    // Agregar méritos
+    meritos.forEach(merito => {
+        const option = document.createElement('option');
+        option.value = merito.mer_codigo;
+        option.textContent = merito.mer_descripcion;
+        option.dataset.nota = nota;
+        select.appendChild(option);
+    });
+
+    console.log(`📝 Select ${selectId} llenado con ${meritos.length} méritos`);
+}
+
+/**
+ * Cargar todos los méritos al inicializar
+ */
+const cargarTodosLosMeritos = async () => {
+    console.log('🔍 Cargando méritos...');
+    await Promise.all([
+        cargarMeritos(3), // Mérito 1
+        cargarMeritos(2)  // Mérito 2
+    ]);
+    console.log('✅ Todos los méritos cargados');
 }
 
 // =============================================================================
@@ -894,6 +1011,163 @@ const validarArrestos = () => {
 }
 
 // =============================================================================
+// FUNCIONES DE MANEJO DE MÉRITOS
+// =============================================================================
+
+/**
+ * Marcar todas las opciones de un mérito
+ */
+const marcarTodosLosMeritos = (selectId) => {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    // Seleccionar todas las opciones (excepto la primera que es el placeholder)
+    Array.from(select.options).forEach((option, index) => {
+        if (index > 0) { // Saltar la primera opción (placeholder)
+            option.selected = true;
+        }
+    });
+
+    // Actualizar contador y totales
+    actualizarContadorMeritos(selectId);
+    calcularTotalMeritos();
+
+    console.log(`✅ Todas las opciones seleccionadas en ${selectId}`);
+}
+
+/**
+ * Limpiar selecciones de un mérito
+ */
+const limpiarMeritos = (selectId) => {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    // Deseleccionar todas las opciones
+    Array.from(select.options).forEach(option => {
+        option.selected = false;
+    });
+
+    // Actualizar contador y totales
+    actualizarContadorMeritos(selectId);
+    calcularTotalMeritos();
+
+    console.log(`🧹 Selecciones limpiadas en ${selectId}`);
+}
+
+/**
+ * Actualizar contador de un mérito específico
+ */
+const actualizarContadorMeritos = (selectId) => {
+    const select = document.getElementById(selectId);
+    const contador = document.getElementById(`contador_${selectId}`);
+    
+    if (!select || !contador) return;
+
+    const seleccionados = Array.from(select.selectedOptions).filter(option => option.value !== '');
+    contador.textContent = `${seleccionados.length} seleccionados`;
+
+    // Cambiar color del badge según cantidad
+    contador.className = 'badge ms-2';
+    if (seleccionados.length === 0) {
+        contador.classList.add('bg-secondary');
+    } else if (seleccionados.length <= 3) {
+        contador.classList.add('bg-info');
+    } else {
+        contador.classList.add('bg-success');
+    }
+}
+
+/**
+ * Calcular total de puntos de méritos
+ */
+const calcularTotalMeritos = () => {
+    let total = 0;
+    let detalleArray = [];
+
+    // Mérito 1 (3 puntos cada uno)
+    if (merito1Select) {
+        const seleccionados1 = Array.from(merito1Select.selectedOptions).filter(option => option.value !== '');
+        const puntos1 = seleccionados1.length * 3;
+        total += puntos1;
+        
+        if (seleccionados1.length > 0) {
+            detalleArray.push(`Mérito 1: ${seleccionados1.length} × 3 = ${puntos1} puntos`);
+        }
+    }
+
+    // Mérito 2 (2 puntos cada uno)
+    if (merito2Select) {
+        const seleccionados2 = Array.from(merito2Select.selectedOptions).filter(option => option.value !== '');
+        const puntos2 = seleccionados2.length * 2;
+        total += puntos2;
+        
+        if (seleccionados2.length > 0) {
+            detalleArray.push(`Mérito 2: ${seleccionados2.length} × 2 = ${puntos2} puntos`);
+        }
+    }
+
+    // Actualizar UI
+    if (totalPuntosMeritos) {
+        totalPuntosMeritos.textContent = total;
+    }
+
+    if (detalleMeritos) {
+        if (detalleArray.length > 0) {
+            detalleMeritos.innerHTML = detalleArray.map(detalle => 
+                `<span class="merito-detalle-item">${detalle}</span>`
+            ).join('');
+        } else {
+            detalleMeritos.innerHTML = '<em>No hay méritos seleccionados</em>';
+        }
+    }
+
+    // Actualizar campos ocultos
+    if (bolMeritosTotal) {
+        bolMeritosTotal.value = total;
+    }
+
+    if (bolMeritosDetalle) {
+        const detalleFinal = {
+            merito_1: merito1Select ? Array.from(merito1Select.selectedOptions)
+                .filter(option => option.value !== '')
+                .map(option => option.value) : [],
+            merito_2: merito2Select ? Array.from(merito2Select.selectedOptions)
+                .filter(option => option.value !== '')
+                .map(option => option.value) : [],
+            total_puntos: total
+        };
+        bolMeritosDetalle.value = JSON.stringify(detalleFinal);
+    }
+
+    console.log(`💰 Total de méritos calculado: ${total} puntos`);
+}
+
+/**
+ * Limpiar todos los méritos
+ */
+const limpiarTodosMeritos = () => {
+    limpiarMeritos('merito_1');
+    limpiarMeritos('merito_2');
+    console.log('🧹 Todos los méritos limpiados');
+}
+
+/**
+ * Validar que haya al menos un mérito seleccionado (opcional)
+ */
+const validarMeritos = () => {
+    // Esta validación es opcional, los méritos pueden estar vacíos
+    const total = parseInt(bolMeritosTotal?.value || '0');
+    
+    if (total === 0) {
+        console.log('ℹ️ No hay méritos seleccionados (opcional)');
+    } else {
+        console.log(`✅ Méritos validados: ${total} puntos`);
+    }
+    
+    return true; // Siempre válido porque es opcional
+}
+
+// =============================================================================
 // FUNCIONES PRINCIPALES
 // =============================================================================
 
@@ -977,6 +1251,9 @@ const guardarEvaluacion = async (event) => {
         BtnGuardar.disabled = false;
         return;
     }
+
+    // ⭐ INTEGRACIÓN - Validación de méritos (opcional pero recomendada)
+    validarMeritos();
 
     // Confirmar guardado
     const confirmacion = await Swal.fire({
@@ -1065,9 +1342,9 @@ const limpiarFormulario = async () => {
         FormEvaluacion.reset();
         limpiarDatosEvaluador();
         limpiarDatosPafe();
-        limpiarDatosDemeritosArrestos(); 
-        habilitarControlesDemeritos();
-        habilitarControlesArrestos();
+        limpiarDatosDemeritosArrestos();
+        // ⭐ INTEGRACIÓN - Limpiar méritos
+        limpiarTodosMeritos();
         
         // Limpiar selecciones
         if (typeof actualizarPerfilSeleccionado === 'function') {
@@ -1083,7 +1360,7 @@ const limpiarFormulario = async () => {
             position: "center",
             icon: "success",
             title: "Formulario limpiado",
-            text: "Los datos del evaluado, PAFEs, deméritos y arrestos se han recargado automáticamente",
+            text: "Los datos del evaluado, PAFEs, deméritos, arrestos y méritos se han recargado automáticamente",
             timer: 2000,
             showConfirmButton: false
         });
@@ -1097,6 +1374,114 @@ const restaurarBotonGuardar = () => {
     BtnGuardar.innerHTML = '<i class="bi bi-floppy me-2"></i>Guardar Datos de Evaluación';
     BtnGuardar.disabled = !evaluadorValidado;
 };
+
+// =============================================================================
+// FUNCIONES PARA DESHABILITAR CONTROLES AUTOMÁTICOS
+// =============================================================================
+
+/**
+ * Deshabilitar todos los controles de deméritos
+ */
+const deshabilitarControlesDemeritos = () => {
+    // Deshabilitar todos los radio buttons de deméritos
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    demeritosRadios.forEach(radio => {
+        radio.disabled = true;
+    });
+
+    // Deshabilitar clicks en los items visuales
+    const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
+    rangoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
+    puntoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    console.log('🔒 Controles de deméritos deshabilitados (carga automática)');
+}
+
+/**
+ * Deshabilitar todos los controles de arrestos
+ */
+const deshabilitarControlesArrestos = () => {
+    // Deshabilitar todos los radio buttons de arrestos
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    arrestosRadios.forEach(radio => {
+        radio.disabled = true;
+    });
+
+    // Deshabilitar clicks en los items visuales
+    const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
+    rangoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
+    puntoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'none';
+        item.style.opacity = '0.7';
+        item.classList.add('disabled-auto');
+    });
+
+    console.log('🔒 Controles de arrestos deshabilitados (carga automática)');
+}
+
+/**
+ * Habilitar controles de deméritos (para cuando se limpia)
+ */
+const habilitarControlesDemeritos = () => {
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    demeritosRadios.forEach(radio => {
+        radio.disabled = false;
+    });
+
+    const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
+    rangoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+
+    const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
+    puntoDemeritosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+}
+
+/**
+ * Habilitar controles de arrestos (para cuando se limpia)
+ */
+const habilitarControlesArrestos = () => {
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    arrestosRadios.forEach(radio => {
+        radio.disabled = false;
+    });
+
+    const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
+    rangoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+
+    const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
+    puntoArrestosItems.forEach(item => {
+        item.style.pointerEvents = 'auto';
+        item.style.opacity = '1';
+        item.classList.remove('disabled-auto');
+    });
+}
 
 // =============================================================================
 // EVENT LISTENERS
@@ -1282,132 +1667,23 @@ if (puntoArrestosItems.length > 0) {
     });
 }
 
-
-
-// =============================================================================
-// FUNCIONES PARA DESHABILITAR CONTROLES AUTOMÁTICOS
-// =============================================================================
-
 /**
- * Deshabilitar todos los controles de deméritos
+ * Event listeners para méritos
  */
-const deshabilitarControlesDemeritos = () => {
-    // Deshabilitar todos los radio buttons de deméritos
-    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
-    demeritosRadios.forEach(radio => {
-        radio.disabled = true;
-    });
-
-    // Deshabilitar clicks en los items visuales
-    const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
-    rangoDemeritosItems.forEach(item => {
-        item.style.pointerEvents = 'none';
-        item.style.opacity = '0.7';
-        item.classList.add('disabled-auto');
-    });
-
-    const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
-    puntoDemeritosItems.forEach(item => {
-        item.style.pointerEvents = 'none';
-        item.style.opacity = '0.7';
-        item.classList.add('disabled-auto');
-    });
-
-    console.log('🔒 Controles de deméritos deshabilitados (carga automática)');
-}
-
-/**
- * Deshabilitar todos los controles de arrestos
- */
-const deshabilitarControlesArrestos = () => {
-    // Deshabilitar todos los radio buttons de arrestos
-    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
-    arrestosRadios.forEach(radio => {
-        radio.disabled = true;
-    });
-
-    // Deshabilitar clicks en los items visuales
-    const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
-    rangoArrestosItems.forEach(item => {
-        item.style.pointerEvents = 'none';
-        item.style.opacity = '0.7';
-        item.classList.add('disabled-auto');
-    });
-
-    const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
-    puntoArrestosItems.forEach(item => {
-        item.style.pointerEvents = 'none';
-        item.style.opacity = '0.7';
-        item.classList.add('disabled-auto');
-    });
-
-    console.log('🔒 Controles de arrestos deshabilitados (carga automática)');
-}
-
-/**
- * Habilitar controles de deméritos (para cuando se limpia)
- */
-const habilitarControlesDemeritos = () => {
-    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
-    demeritosRadios.forEach(radio => {
-        radio.disabled = false;
-    });
-
-    const rangoDemeritosItems = document.querySelectorAll('.rango-demeritos-item');
-    rangoDemeritosItems.forEach(item => {
-        item.style.pointerEvents = 'auto';
-        item.style.opacity = '1';
-        item.classList.remove('disabled-auto');
-    });
-
-    const puntoDemeritosItems = document.querySelectorAll('.punto-demeritos-item');
-    puntoDemeritosItems.forEach(item => {
-        item.style.pointerEvents = 'auto';
-        item.style.opacity = '1';
-        item.classList.remove('disabled-auto');
+// Event listeners para cambios en las selecciones
+if (merito1Select) {
+    merito1Select.addEventListener('change', () => {
+        actualizarContadorMeritos('merito_1');
+        calcularTotalMeritos();
     });
 }
 
-/**
- * Habilitar controles de arrestos (para cuando se limpia)
- */
-const habilitarControlesArrestos = () => {
-    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
-    arrestosRadios.forEach(radio => {
-        radio.disabled = false;
-    });
-
-    const rangoArrestosItems = document.querySelectorAll('.rango-arrestos-item');
-    rangoArrestosItems.forEach(item => {
-        item.style.pointerEvents = 'auto';
-        item.style.opacity = '1';
-        item.classList.remove('disabled-auto');
-    });
-
-    const puntoArrestosItems = document.querySelectorAll('.punto-arrestos-item');
-    puntoArrestosItems.forEach(item => {
-        item.style.pointerEvents = 'auto';
-        item.style.opacity = '1';
-        item.classList.remove('disabled-auto');
+if (merito2Select) {
+    merito2Select.addEventListener('change', () => {
+        actualizarContadorMeritos('merito_2');
+        calcularTotalMeritos();
     });
 }
-
-// =============================================================================
-// MODIFICAR LAS FUNCIONES EXISTENTES
-// =============================================================================
-
-// MODIFICAR la función cargarDatosDemeritos - AGREGAR al final (antes del } catch):
-            // ⭐ NUEVA LÍNEA - Deshabilitar controles después de cargar
-            deshabilitarControlesDemeritos();
-
-// MODIFICAR la función cargarDatosArrestos - AGREGAR al final (antes del } catch):
-            // ⭐ NUEVA LÍNEA - Deshabilitar controles después de cargar
-            deshabilitarControlesArrestos();
-
-// MODIFICAR la función limpiarDatosDemeritosArrestos - AGREGAR al final:
-    // ⭐ NUEVAS LÍNEAS - Habilitar controles al limpiar
-    habilitarControlesDemeritos();
-    habilitarControlesArrestos();
 
 // =============================================================================
 // CSS ADICIONAL PARA ELEMENTOS DESHABILITADOS
@@ -1445,6 +1721,33 @@ const stylesCSS = `
     color: white !important;
     opacity: 0.8 !important;
 }
+
+/* Estilos para méritos */
+.merito-detalle-item {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0277bd;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    margin: 2px;
+    font-weight: 500;
+}
+
+.contador_merito_1,
+.contador_merito_2 {
+    transition: all 0.3s ease;
+}
+
+/* Estilos para select múltiple */
+select[multiple] option:checked {
+    background: #2563eb !important;
+    color: white !important;
+}
+
+select[multiple] {
+    min-height: 120px;
+}
 </style>
 `;
 
@@ -1453,14 +1756,15 @@ if (document.head) {
     document.head.insertAdjacentHTML('beforeend', stylesCSS);
 }
 
-
-
-
-
+// =============================================================================
+// LOGS DE CONFIRMACIÓN
+// =============================================================================
 
 console.log('✅ JavaScript del Formulario de Evaluación cargado correctamente');
 console.log('✅ JavaScript del Perfil Biofísico integrado correctamente');
 console.log('✅ JavaScript de Condición Física (PAFEs) integrado correctamente');
 console.log('✅ JavaScript de Deméritos integrado correctamente');
 console.log('✅ JavaScript de Arrestos integrado correctamente');
+console.log('✅ JavaScript de Méritos integrado correctamente');
 console.log('🚀 Sistema de carga automática de deméritos y arrestos activado');
+console.log('🎖️ Sistema de méritos con selección múltiple activado');
