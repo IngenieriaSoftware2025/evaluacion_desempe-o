@@ -40,6 +40,8 @@ $router->get('/API/evaluacionformulario/obtenerArrestosEvaluado', [EvaluacionFor
 $router->get('/API/evaluacionformulario/obtenerMeritos', [EvaluacionFormularioController::class, 'obtenerMeritosAPI']);
 
 
-
+// CONCEPTUALIZACIÓN DE EVALUACIÓN 
+$router->get('/conceptualizacion', [EvaluacionFormularioController::class, 'renderizarConceptualizacion']);
+$router->post('/API/conceptualizacion/guardar', [EvaluacionFormularioController::class, 'guardarConceptualizacionAPI']);
 
 $router->comprobarRutas();

@@ -658,4 +658,66 @@ class EvaluacionFormularioController extends ActiveRecord
             ]);
         }
     }
+
+
+
+    public static function renderizarConceptualizacion(Router $router)
+{
+    $router->render('evaluacionformulario/conceptualizacion', []);
+
+    // API para guardar la conceptualización
+public static function guardarConceptualizacionAPI()
+{
+    getHeadersApi();
+    try {
+        // Validación básica - catálogo del evaluado obligatorio
+        if (empty($_POST['bol_cat_evaluado'])) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'El catálogo del evaluado es obligatorio'
+            ]);
+            return;
+        }
+
+        // Validar que todas las 15 preguntas tengan respuesta
+        $aspectos_vacios = [];
+        for ($i = 1; $i <= 15; $i++) {
+            if (empty($_POST["aspecto_$i"])) {
+                $aspectos_vacios[] = $i;
+            }
+        }
+
+        if (!empty($aspectos_vacios)) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Debe responder todas las preguntas. Faltan los aspectos: ' . implode(', ', $aspectos_vacios)
+            ]);
+            return;
+        }
+
+        // Calcular total de conceptualización
+        $total_conceptualizacion = 0;
+        for ($i = 1; $i <= 15; $i++) {
+            $total_conceptualizacion += intval($_POST["aspecto_$i"]);
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'codigo' => 1,
+            'mensaje' => 'Conceptualización guardada correctamente',
+            'total_calculado' => $total_conceptualizacion
+        ]);
+
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'codigo' => 0,
+            'mensaje' => 'Error al guardar la conceptualización',
+            'detalle' => $e->getMessage()
+        ]);
+    }
+}
+}
 }
