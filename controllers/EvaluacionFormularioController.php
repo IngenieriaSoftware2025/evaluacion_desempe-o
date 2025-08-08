@@ -14,6 +14,173 @@ class EvaluacionFormularioController extends ActiveRecord
         $router->render('evaluacionformulario/index', []);
     }
 
+    public static function renderizarPagina2(Router $router)
+    {
+        $router->render('evaluacionformulario/index2', []);
+    }
+
+    public static function obtenerDatosEvaluadoAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+
+            $sql = "SELECT 
+                        p.per_catalogo as catalogo,
+                        p.per_nom1, p.per_nom2, p.per_ape1, p.per_ape2,
+                        g.gra_desc_md as grado,
+                        p.per_desc_empleo as lugar_alta,
+                        d.dep_desc_md as dependencia_alta,
+                        o.org_plaza_desc as puesto_ocupa,
+                        t.t_puesto as tiempo_ocupar_puesto
+                    FROM mper p
+                    INNER JOIN grados g ON p.per_grado = g.gra_codigo
+                    LEFT JOIN morg o ON p.per_plaza = o.org_plaza
+                    LEFT JOIN mdep d ON o.org_dependencia = d.dep_llave
+                    LEFT JOIN tiempos t ON p.per_catalogo = t.t_catalogo
+                    WHERE p.per_catalogo = {$catalogo}
+                    AND g.gra_clase = 4
+                    AND p.per_situacion IN (11)";
+
+            $data = self::fetchArray($sql);
+
+            if (empty($data)) {
+                http_response_code(404);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'Especialista no encontrado o no cumple los criterios'
+                ]);
+                return;
+            }
+
+            $especialista = $data[0];
+            $especialista['nombre_completo'] = self::formatearNombreCompleto($especialista);
+            
+            // Validar tiempo mínimo del evaluado (3+ meses)
+            $validacionEvaluado = self::validarTiempoMinimo($especialista['tiempo_ocupar_puesto']);
+            $especialista['puede_ser_evaluado'] = $validacionEvaluado['puede'];
+            $especialista['mensaje_tiempo'] = $validacionEvaluado['mensaje'];
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Datos del evaluado obtenidos correctamente',
+                'data' => $especialista
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener datos del evaluado',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public static function obtenerDatosEvaluadorAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+
+            $sql = "SELECT 
+                        p.per_catalogo as catalogo,
+                        p.per_nom1, p.per_nom2, p.per_ape1, p.per_ape2,
+                        g.gra_desc_md as grado,
+                        o.org_plaza_desc as puesto_ocupa,
+                        o.org_ceom as ceom,
+                        t.t_puesto as tiempo_supervisar_evaluado,
+                        2025 as anio_evaluacion
+                    FROM mper p
+                    INNER JOIN grados g ON p.per_grado = g.gra_codigo
+                    LEFT JOIN morg o ON p.per_plaza = o.org_plaza
+                    LEFT JOIN tiempos t ON p.per_catalogo = t.t_catalogo
+                    WHERE p.per_catalogo = {$catalogo}";
+
+            $data = self::fetchArray($sql);
+
+            if (empty($data)) {
+                http_response_code(404);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'Evaluador no encontrado'
+                ]);
+                return;
+            }
+
+            $evaluador = $data[0];
+            $evaluador['nombre_completo'] = self::formatearNombreCompleto($evaluador);
+
+            // Validar tiempo mínimo del evaluador (3+ meses)
+            $validacionEvaluador = self::validarTiempoMinimo($evaluador['tiempo_supervisar_evaluado']);
+            $evaluador['puede_evaluar'] = $validacionEvaluador['puede'];
+            $evaluador['mensaje_tiempo'] = $validacionEvaluador['mensaje'];
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Datos del evaluador obtenidos correctamente',
+                'data' => $evaluador
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener datos del evaluador',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public static function validarTiempoEvaluadorAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+            $validacion = self::validarTiempoEvaluador($catalogo);
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Validación realizada',
+                'data' => $validacion
+            ]);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error en la validación',
+                'detalle' => $e->getMessage()
+            ]);
+        }
+    }
+
+    // FUNCIÓN PARA VALIDAR TIEMPO MÍNIMO (3+ MESES)
+   private static function validarTiempoMinimo($tiempoPuesto)
+{
+    if (!$tiempoPuesto) {
+        return ['puede' => false, 'mensaje' => 'No se encontraron datos de tiempo'];
+    }
+
+    // Extraer años, meses y días del formato AAMMDD
+    $años = floor($tiempoPuesto / 10000);
+    $meses = floor(($tiempoPuesto % 10000) / 100);
+    $días = $tiempoPuesto % 100;
+    
+    // Convertir todo a meses
+    $totalMeses = ($años * 12) + $meses + ($días / 30);
+    
+    if ($totalMeses >= 3) {
+        return ['puede' => true, 'mensaje' => "Cumple con el tiempo mínimo ({$años} años, {$meses} meses, {$días} días)"];
+    } else {
+        return ['puede' => false, 'mensaje' => "No cumple con el tiempo mínimo de 3 meses. Tiempo actual: {$años} años, {$meses} meses, {$días} días"];
+    }
+}
+
+    // FUNCIONES EXISTENTES SIN CAMBIOS
     public static function guardarAPI()
     {
         getHeadersApi();
@@ -101,140 +268,6 @@ class EvaluacionFormularioController extends ActiveRecord
             echo json_encode([
                 'codigo' => 0,
                 'mensaje' => 'Error al eliminar la evaluación',
-                'detalle' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public static function obtenerDatosEvaluadoAPI()
-    {
-        getHeadersApi();
-        try {
-            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-
-            $sql = "SELECT 
-                        p.per_catalogo as catalogo,
-                        p.per_nom1, p.per_nom2, p.per_ape1, p.per_ape2,
-                        g.gra_desc_md as grado,
-                        p.per_desc_empleo as lugar_alta,
-                        d.dep_desc_md as dependencia_alta,
-                        o.org_plaza_desc as puesto_ocupa,
-                        t.t_puesto as tiempo_ocupar_puesto
-                    FROM mper p
-                    INNER JOIN grados g ON p.per_grado = g.gra_codigo
-                    LEFT JOIN morg o ON p.per_plaza = o.org_plaza
-                    LEFT JOIN mdep d ON o.org_dependencia = d.dep_llave
-                    LEFT JOIN tiempos t ON p.per_catalogo = t.t_catalogo
-                    WHERE p.per_catalogo = {$catalogo}
-                    AND g.gra_clase = 4
-                    AND p.per_situacion IN (11)";
-
-            $data = self::fetchArray($sql);
-
-            if (empty($data)) {
-                http_response_code(404);
-                echo json_encode([
-                    'codigo' => 0,
-                    'mensaje' => 'Especialista no encontrado o no cumple los criterios'
-                ]);
-                return;
-            }
-
-            $especialista = $data[0];
-            $especialista['nombre_completo'] = self::formatearNombreCompleto($especialista);
-
-            http_response_code(200);
-            echo json_encode([
-                'codigo' => 1,
-                'mensaje' => 'Datos del evaluado obtenidos correctamente',
-                'data' => $especialista
-            ]);
-
-        } catch (Exception $e) {
-            http_response_code(400);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'Error al obtener datos del evaluado',
-                'detalle' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public static function obtenerDatosEvaluadorAPI()
-    {
-        getHeadersApi();
-        try {
-            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-
-            $sql = "SELECT 
-                        p.per_catalogo as catalogo,
-                        p.per_nom1, p.per_nom2, p.per_ape1, p.per_ape2,
-                        g.gra_desc_md as grado,
-                        o.org_plaza_desc as puesto_ocupa,
-                        o.org_ceom as ceom,
-                        t.t_puesto as tiempo_supervisar_evaluado,
-                        2025 as anio_evaluacion
-                    FROM mper p
-                    INNER JOIN grados g ON p.per_grado = g.gra_codigo
-                    LEFT JOIN morg o ON p.per_plaza = o.org_plaza
-                    LEFT JOIN tiempos t ON p.per_catalogo = t.t_catalogo
-                    WHERE p.per_catalogo = {$catalogo}";
-
-            $data = self::fetchArray($sql);
-
-            if (empty($data)) {
-                http_response_code(404);
-                echo json_encode([
-                    'codigo' => 0,
-                    'mensaje' => 'Evaluador no encontrado'
-                ]);
-                return;
-            }
-
-            $evaluador = $data[0];
-            $evaluador['nombre_completo'] = self::formatearNombreCompleto($evaluador);
-
-            // Validar tiempo mínimo
-            $validacion = self::validarTiempoEvaluador($catalogo);
-            $evaluador['puede_evaluar'] = $validacion['validacion'] === 'PUEDE_EVALUAR';
-            $evaluador['mensaje_validacion'] = $validacion['mensaje'];
-
-            http_response_code(200);
-            echo json_encode([
-                'codigo' => 1,
-                'mensaje' => 'Datos del evaluador obtenidos correctamente',
-                'data' => $evaluador
-            ]);
-
-        } catch (Exception $e) {
-            http_response_code(400);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'Error al obtener datos del evaluador',
-                'detalle' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public static function validarTiempoEvaluadorAPI()
-    {
-        getHeadersApi();
-        try {
-            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-            $validacion = self::validarTiempoEvaluador($catalogo);
-
-            http_response_code(200);
-            echo json_encode([
-                'codigo' => 1,
-                'mensaje' => 'Validación realizada',
-                'data' => $validacion
-            ]);
-
-        } catch (Exception $e) {
-            http_response_code(400);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'Error en la validación',
                 'detalle' => $e->getMessage()
             ]);
         }

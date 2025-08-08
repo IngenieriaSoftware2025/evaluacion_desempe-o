@@ -39,7 +39,8 @@ $router->get('/API/evaluacionformulario/obtenerArrestosEvaluado', [EvaluacionFor
 // MÉRITOS
 $router->get('/API/evaluacionformulario/obtenerMeritos', [EvaluacionFormularioController::class, 'obtenerMeritosAPI']);
 
-
+// FORMULARIO DE EVALUACIÓN DEL DESEMPEÑO - PÁGINA 2
+$router->get('/index2.php', [EvaluacionFormularioController::class, 'renderizarPagina2']);
 
 
 $router->comprobarRutas();

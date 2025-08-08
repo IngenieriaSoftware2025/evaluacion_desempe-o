@@ -38,6 +38,30 @@ const errorEvaluadorCatalogo = document.getElementById('error_evaluador_catalogo
 // Variables de control
 let datosEvaluadorCargados = false;
 let evaluadorValidado = false;
+let evaluadoValidado = false;
+
+// FUNCIÓN PARA CONVERTIR TIEMPO DE FORMATO AAMMDD A TEXTO
+const formatearTiempo = (tiempoPuesto) => {
+    if (!tiempoPuesto || tiempoPuesto === 0) return 'No disponible';
+    
+    // Extraer años, meses y días del formato AAMMDD
+    const años = Math.floor(tiempoPuesto / 10000);
+    const meses = Math.floor((tiempoPuesto % 10000) / 100);
+    const días = tiempoPuesto % 100;
+    
+    let resultado = '';
+    if (años > 0) resultado += `${años} años`;
+    if (meses > 0) {
+        if (resultado) resultado += ', ';
+        resultado += `${meses} meses`;
+    }
+    if (días > 0) {
+        if (resultado) resultado += ', ';
+        resultado += `${días} días`;
+    }
+    
+    return resultado || 'Sin datos';
+}
 
 // CARGAR DATOS DEL EVALUADO DESDE LA URL
 const CargarDatosEvaluado = async () => {
@@ -63,6 +87,7 @@ const CargarDatosEvaluado = async () => {
         const { codigo, mensaje, data } = datos;
 
         if (codigo === 1) {
+            // Llenar campos del evaluado
             evaluadoCatalogo.value = data.catalogo || '';
             evaluadoGrado.value = data.grado || '';
             evaluadoNom1.value = data.per_nom1 || '';
@@ -74,6 +99,16 @@ const CargarDatosEvaluado = async () => {
             evaluadoTiempo.value = formatearTiempo(data.tiempo_ocupar_puesto);
 
             bolCatEvaluado.value = data.catalogo || '';
+            
+            // Validar si el evaluado puede ser evaluado
+            evaluadoValidado = data.puede_ser_evaluado || false;
+            
+            if (!evaluadoValidado) {
+                mostrarAlerta('danger', `EVALUADO: ${data.mensaje_tiempo}`);
+                deshabilitarFormulario();
+            } else {
+                console.log('Evaluado válido:', data.mensaje_tiempo);
+            }
             
             // Cargar datos relacionados automáticamente
             CargarDatosPafe(catalogoEvaluado);
@@ -119,6 +154,7 @@ const CargarDatosEvaluador = async (catalogo) => {
         const { codigo, mensaje, data } = datos;
 
         if (codigo === 1) {
+            // Llenar campos del evaluador
             evaluadorGrado.value = data.grado || '';
             evaluadorNom1.value = data.per_nom1 || '';
             evaluadorNom2.value = data.per_nom2 || '';
@@ -133,7 +169,18 @@ const CargarDatosEvaluador = async (catalogo) => {
             evaluadorCatalogo.classList.remove('is-invalid');
             errorEvaluadorCatalogo.textContent = '';
 
-            ValidarTiempoEvaluador(catalogo);
+            // Validar si el evaluador puede evaluar
+            evaluadorValidado = data.puede_evaluar || false;
+            
+            if (evaluadorValidado) {
+                mostrarAlerta('success', `EVALUADOR: ${data.mensaje_tiempo}`);
+            } else {
+                mostrarAlerta('danger', `EVALUADOR: ${data.mensaje_tiempo}`);
+                deshabilitarFormulario();
+            }
+
+            // Verificar estado general de la evaluación
+            verificarEstadoEvaluacion();
 
         } else {
             limpiarDatosEvaluador();
@@ -151,33 +198,67 @@ const CargarDatosEvaluador = async (catalogo) => {
     }
 }
 
-// VALIDAR TIEMPO MÍNIMO DEL EVALUADOR
-const ValidarTiempoEvaluador = async (catalogo) => {
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/validarTiempoEvaluador?catalogo=${catalogo}`;
-    const config = { method: 'GET' }
-
-    try {
-        const respuesta = await fetch(url, config);
-        const datos = await respuesta.json();
-        const { codigo, data } = datos;
-
-        if (codigo === 1) {
-            evaluadorValidado = data.validacion === 'PUEDE_EVALUAR';
-            
-            if (evaluadorValidado) {
-                mostrarAlerta('success', data.mensaje);
-            } else {
-                mostrarAlerta('warning', data.mensaje);
-            }
-        } else {
-            evaluadorValidado = false;
-            mostrarAlerta('danger', 'Error en la validación del evaluador');
+// VERIFICAR EL ESTADO GENERAL DE LA EVALUACIÓN
+const verificarEstadoEvaluacion = () => {
+    if (evaluadoValidado && evaluadorValidado) {
+        mostrarAlerta('success', 'Tanto el evaluado como el evaluador cumplen con los requisitos de tiempo. La evaluación puede proceder.');
+        habilitarFormulario();
+    } else {
+        let mensaje = 'No se puede proceder con la evaluación: ';
+        if (!evaluadoValidado && !evaluadorValidado) {
+            mensaje += 'Ni el evaluado ni el evaluador cumplen con el tiempo mínimo de 3 meses en el puesto.';
+        } else if (!evaluadoValidado) {
+            mensaje += 'El evaluado no cumple con el tiempo mínimo de 3 meses en el puesto.';
+        } else if (!evaluadorValidado) {
+            mensaje += 'El evaluador no cumple con el tiempo mínimo de 3 meses en el puesto.';
         }
+        mostrarAlerta('danger', mensaje);
+        deshabilitarFormulario();
+    }
+}
 
-    } catch (error) {
-        console.log(error);
-        evaluadorValidado = false;
-        mostrarAlerta('danger', 'Error al validar el tiempo del evaluador');
+// DESHABILITAR EL FORMULARIO CUANDO NO SE CUMPLE CON LOS REQUISITOS
+const deshabilitarFormulario = () => {
+    // Deshabilitar sección III - Factores de salud y conducta
+    const perfilRadios = document.querySelectorAll('input[name="bol_perfil"]');
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    const meritosSelects = document.querySelectorAll('#merito_1, #merito_2');
+    
+    // Deshabilitar todos los controles
+    perfilRadios.forEach(radio => radio.disabled = true);
+    demeritosRadios.forEach(radio => radio.disabled = true);
+    arrestosRadios.forEach(radio => radio.disabled = true);
+    meritosSelects.forEach(select => select.disabled = true);
+    
+    // Deshabilitar botón de página siguiente
+    if (BtnPaginaSiguiente) {
+        BtnPaginaSiguiente.disabled = true;
+        BtnPaginaSiguiente.classList.add('btn-secondary');
+        BtnPaginaSiguiente.classList.remove('btn-success');
+    }
+}
+
+// HABILITAR EL FORMULARIO CUANDO SE CUMPLEN LOS REQUISITOS
+const habilitarFormulario = () => {
+    // Habilitar sección III - Factores de salud y conducta
+    const perfilRadios = document.querySelectorAll('input[name="bol_perfil"]');
+    const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');
+    const arrestosRadios = document.querySelectorAll('input[name="rango_arrestos"]');
+    const meritosSelects = document.querySelectorAll('#merito_1, #merito_2');
+    
+    // Habilitar todos los controles (excepto los que están automáticamente cargados)
+    perfilRadios.forEach(radio => radio.disabled = false);
+    meritosSelects.forEach(select => select.disabled = false);
+    
+    // Los deméritos y arrestos quedan deshabilitados porque se cargan automáticamente
+    // pero no por la validación de tiempo
+    
+    // Habilitar botón de página siguiente
+    if (BtnPaginaSiguiente) {
+        BtnPaginaSiguiente.disabled = false;
+        BtnPaginaSiguiente.classList.remove('btn-secondary');
+        BtnPaginaSiguiente.classList.add('btn-success');
     }
 }
 
@@ -341,12 +422,22 @@ const VolverAlListado = () => {
 
 // NAVEGACIÓN - IR A PÁGINA SIGUIENTE
 const IrPaginaSiguiente = () => {
-    window.location.href = '/evaluacion_desempe-o/pagina-siguiente';
+    if (evaluadoValidado && evaluadorValidado) {
+        window.location.href = '/evaluacion_desempe-o/index2.php';
+    } else {
+        Swal.fire({
+            position: "center",
+            icon: "warning",
+            title: "No se puede continuar",
+            text: "Debe cumplir con los requisitos de tiempo mínimo para proceder con la evaluación",
+            showConfirmButton: true,
+        });
+    }
 }
 
 // FUNCIONES DE APOYO
 const mostrarAlerta = (tipo, mensaje) => {
-    alertaValidacion.classList.remove('d-none', 'alert-danger', 'alert-warning', 'alert-success');
+    alertaValidacion.classList.remove('d-none', 'alert-danger', 'alert-warning', 'alert-success', 'alert-info');
     alertaValidacion.classList.add(`alert-${tipo}`);
     mensajeValidacion.textContent = mensaje;
 }
@@ -354,25 +445,6 @@ const mostrarAlerta = (tipo, mensaje) => {
 const ocultarAlerta = () => {
     alertaValidacion.classList.add('d-none');
 }
-
-const formatearTiempo = (meses) => {
-    if (!meses || meses === 0) return 'No disponible';
-    
-    const años = Math.floor(meses / 12);
-    const mesesRestantes = meses % 12;
-    
-    let resultado = '';
-    if (años > 0) {
-        resultado += `${años} ${años === 1 ? 'año' : 'años'}`;
-    }
-    if (mesesRestantes > 0) {
-        if (resultado) resultado += ' ';
-        resultado += `${mesesRestantes} ${mesesRestantes === 1 ? 'mes' : 'meses'}`;
-    }
-    
-    return resultado;
-}
-
 
 const debounce = (func, delay) => {
     let timeoutId;
