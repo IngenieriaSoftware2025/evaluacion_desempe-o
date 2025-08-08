@@ -659,7 +659,7 @@ public static function obtenerPreguntasConceptualizacionAPI()
 
         $serie = strtoupper(trim($dataSerie[0]['meom_serie']));
         
-        // Mapear serie a proyección
+        // Mapear serie a proyección según la lógica del profesor
         $proyeccion = self::mapearSerieAProyeccion($serie);
         
         if ($proyeccion === null) {

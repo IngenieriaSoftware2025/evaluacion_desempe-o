@@ -423,7 +423,21 @@ const VolverAlListado = () => {
 // NAVEGACIÓN - IR A PÁGINA SIGUIENTE
 const IrPaginaSiguiente = () => {
     if (evaluadoValidado && evaluadorValidado) {
-        window.location.href = '/evaluacion_desempe-o/index2.php';
+        // Obtener el catálogo del evaluado
+        const catalogoEvaluado = document.getElementById('evaluado_catalogo').value;
+        
+        if (catalogoEvaluado) {
+            // Llevar el catálogo en la URL
+            window.location.href = `/evaluacion_desempe-o/index2.php?catalogo=${catalogoEvaluado}`;
+        } else {
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Error",
+                text: "No se encontró el catálogo del evaluado",
+                showConfirmButton: true,
+            });
+        }
     } else {
         Swal.fire({
             position: "center",

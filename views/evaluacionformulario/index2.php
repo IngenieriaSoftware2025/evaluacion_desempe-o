@@ -7,11 +7,10 @@
                     <div class="evaluation-icon">
                         <i class="bi bi-clipboard-check"></i>
                     </div>
-                    <h5 class="mb-1 header-subtitle">IV. CONCEPTUALIZACIÓN</h5>
-                    <h4 class="mb-0 header-title">EVALUACIÓN DEL DESEMPEÑO - PÁGINA 2</h4>
+                    <h4 class="mb-0 header-title">EVALUACIÓN DEL DESEMPEÑO</h4>
                     <div class="military-badge mt-3" id="tipo_especialista">
                         <i class="bi bi-shield-check me-2"></i>
-                        <span id="tipo_descripcion">Cargando...</span>
+                        <span id="tipo_descripcion">ESPECIALISTAS</span>
                     </div>
                 </div>
                 

@@ -7,11 +7,11 @@
                     <div class="evaluation-icon">
                         <i class="bi bi-person-check"></i>
                     </div>
-                    <h5 class="mb-1 header-subtitle">I. DATOS DEL EVALUADO</h5>
+                    <h5 class="mb-1 header-subtitle">DATOS DEL EVALUADO</h5>
                     <h4 class="mb-0 header-title">BOLETA DE EVALUACIÓN DEL DESEMPEÑO PARA ESPECIALISTAS</h4>
                     <div class="military-badge mt-3">
                         <i class="bi bi-shield-check me-2"></i>
-                        SERIE TÉCNICA TIPO ("C")
+                        SERIE TÉCNICA
                     </div>
                 </div>
                 <div class="card-body form-section">

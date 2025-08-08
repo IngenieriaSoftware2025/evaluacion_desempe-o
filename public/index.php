@@ -47,5 +47,4 @@ $router->get('/index2.php', [EvaluacionFormularioController::class, 'renderizarP
 $router->get('/API/evaluacionformulario/obtenerPreguntasConceptualizacion', [EvaluacionFormularioController::class, 'obtenerPreguntasConceptualizacionAPI']);
 
 
-
 $router->comprobarRutas();
