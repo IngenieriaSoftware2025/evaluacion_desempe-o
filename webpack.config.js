@@ -9,7 +9,9 @@ module.exports = {
     'js/evaluacionespecialistas/index' : './src/js/evaluacionespecialistas/index.js',
     'js/evaluacionformulario/index' : './src/js/evaluacionformulario/index.js',
     'css/evaluacionformulario/style' : './src/css/evaluacionformulario/style.css',
-    'css/evaluacionespecialistas/style' : './src/css/evaluacionespecialistas/style.css'
+    'css/evaluacionespecialistas/style' : './src/css/evaluacionespecialistas/style.css',
+'js/evaluacionformulario/index2' : './src/js/evaluacionformulario/index2.js',
+'css/evaluacionformulario/index2' : './src/css/evaluacionformulario/index2.css'
   },
   output: {
     filename: '[name].js',

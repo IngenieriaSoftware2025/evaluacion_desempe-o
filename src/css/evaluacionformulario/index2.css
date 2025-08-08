@@ -1,0 +1,256 @@
+/* CSS específico para la Página 2 - Sección IV Conceptualización */
+
+/* Contenedor principal de conceptualización */
+.conceptualizacion-container {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: var(--shadow-medium);
+}
+
+/* Encabezado de escalas */
+.escala-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow-soft);
+}
+
+.escala-col {
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin: 0 2px;
+}
+
+.insatisfactorio-col {
+    background: rgba(239, 68, 68, 0.8);
+}
+
+.intermedio-col {
+    background: rgba(245, 158, 11, 0.8);
+}
+
+.optimo-col {
+    background: rgba(16, 185, 129, 0.8);
+}
+
+/* Items de preguntas */
+.pregunta-item {
+    background: white;
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
+}
+
+.pregunta-item:hover {
+    border-color: var(--secondary-blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.pregunta-numero {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.pregunta-texto {
+    color: var(--text-dark);
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 500;
+    flex: 1;
+}
+
+/* Opciones de respuesta */
+.opciones-respuesta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.opcion-radio-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.opcion-radio-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    transform: scale(1.05);
+}
+
+.radio-conceptualizacion {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    accent-color: var(--primary-blue);
+}
+
+.radio-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Estados de las opciones */
+.opcion-radio-item.insatisfactorio {
+    color: var(--danger-red);
+}
+
+.opcion-radio-item.intermedio {
+    color: var(--warning-orange);
+}
+
+.opcion-radio-item.optimo {
+    color: var(--success-green);
+}
+
+.opcion-radio-item input:checked + .radio-label {
+    color: var(--primary-blue);
+    font-weight: 700;
+    transform: scale(1.1);
+}
+
+/* Sección de totales */
+.totales-section {
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 2px solid var(--primary-blue);
+}
+
+.subtotal-labels, .subtotal-valores {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.subtotal-item, .total-item {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+.subtotal-box, .total-box {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    font-weight: 900;
+    min-width: 80px;
+    box-shadow: var(--shadow-medium);
+    transition: all 0.3s ease;
+}
+
+.total-box {
+    background: linear-gradient(135deg, var(--success-green) 0%, #059669 100%);
+    font-size: 2rem;
+    animation: totalPulse 2s ease-in-out infinite;
+}
+
+@keyframes totalPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Estados de carga y error */
+#loading_preguntas {
+    padding: 3rem;
+    color: var(--primary-blue);
+}
+
+#error_preguntas {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(254, 226, 226, 0.8) 100%);
+    border-left: 4px solid var(--danger-red);
+    border-radius: 10px;
+}
+
+/* Progreso visual */
+.pregunta-item.completada {
+    border-color: var(--success-green);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.pregunta-item.completada .pregunta-numero {
+    background: linear-gradient(135deg, var(--success-green) 0%, #059669 100%);
+}
+
+/* Indicador de progreso */
+.progreso-conceptualizacion {
+    background: var(--border-light);
+    height: 6px;
+    border-radius: 3px;
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.progreso-barra {
+    background: linear-gradient(90deg, var(--success-green) 0%, var(--secondary-blue) 100%);
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .conceptualizacion-container {
+        padding: 1.5rem;
+    }
+    
+    .pregunta-item {
+        padding: 1rem;
+    }
+    
+    .pregunta-numero {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .pregunta-texto {
+        font-size: 0.9rem;
+    }
+    
+    .opciones-respuesta {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .escala-header {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .subtotal-box, .total-box {
+        font-size: 1.2rem;
+        padding: 0.75rem;
+    }
+    
+    .total-box {
+        font-size: 1.5rem;
+    }
+}

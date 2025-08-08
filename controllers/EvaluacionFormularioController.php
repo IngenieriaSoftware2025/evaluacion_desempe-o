@@ -619,4 +619,110 @@ class EvaluacionFormularioController extends ActiveRecord
         ];
         return $meses[$mes] ?? 'Mes inválido';
     }
+
+
+
+
+
+
+public static function obtenerPreguntasConceptualizacionAPI()
+{
+    getHeadersApi();
+    try {
+        $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
+
+        if (!$catalogo) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'El catálogo del evaluado es obligatorio'
+            ]);
+            return;
+        }
+
+        // Query para obtener la serie del especialista
+        $sql = "SELECT meom_serie FROM mper, morg, meom 
+                WHERE per_plaza = org_plaza 
+                AND org_ceom = meom_ceom 
+                AND per_catalogo = {$catalogo}";
+
+        $dataSerie = self::fetchArray($sql);
+
+        if (empty($dataSerie)) {
+            http_response_code(404);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'No se encontró la serie para este especialista'
+            ]);
+            return;
+        }
+
+        $serie = strtoupper(trim($dataSerie[0]['meom_serie']));
+        
+        // Mapear serie a proyección
+        $proyeccion = self::mapearSerieAProyeccion($serie);
+        
+        if ($proyeccion === null) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Serie no válida para evaluación: ' . $serie
+            ]);
+            return;
+        }
+
+        // Obtener preguntas según la proyección
+        $sqlPreguntas = "SELECT pre_codigo, pre_descripcion, pre_proyeccion 
+                         FROM eva_preguntas 
+                         WHERE pre_proyeccion = {$proyeccion} 
+                         ORDER BY pre_codigo ASC";
+
+        $preguntas = self::fetchArray($sqlPreguntas);
+
+        // Obtener tipo de especialista
+        $sqlTipo = "SELECT tip_codigo, tip_descripcion 
+                    FROM eva_tipo 
+                    WHERE tip_codigo = {$proyeccion}";
+
+        $tipoData = self::fetchArray($sqlTipo);
+        $tipoDescripcion = !empty($tipoData) ? $tipoData[0]['tip_descripcion'] : 'ESPECIALISTA';
+
+        http_response_code(200);
+        echo json_encode([
+            'codigo' => 1,
+            'mensaje' => 'Preguntas obtenidas correctamente',
+            'data' => [
+                'serie' => $serie,
+                'proyeccion' => $proyeccion,
+                'tipo_descripcion' => $tipoDescripcion,
+                'preguntas' => $preguntas,
+                'total_preguntas' => count($preguntas)
+            ]
+        ]);
+
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'codigo' => 0,
+            'mensaje' => 'Error al obtener preguntas de conceptualización',
+            'detalle' => $e->getMessage()
+        ]);
+    }
+}
+
+// FUNCIÓN PRIVADA PARA MAPEAR SERIE A PROYECCIÓN
+private static function mapearSerieAProyeccion($serie)
+{
+    switch ($serie) {
+        case 'T':
+        case 'P':
+            return 1; // TÉCNICA
+        case 'E':
+            return 2; // ADMINISTRATIVA  
+        case 'O':
+            return 3; // OPERATIVA
+        default:
+            return null;
+    }
+}
 }

@@ -43,4 +43,9 @@ $router->get('/API/evaluacionformulario/obtenerMeritos', [EvaluacionFormularioCo
 $router->get('/index2.php', [EvaluacionFormularioController::class, 'renderizarPagina2']);
 
 
+// En la sección de rutas de evaluacionformulario
+$router->get('/API/evaluacionformulario/obtenerPreguntasConceptualizacion', [EvaluacionFormularioController::class, 'obtenerPreguntasConceptualizacionAPI']);
+
+
+
 $router->comprobarRutas();
