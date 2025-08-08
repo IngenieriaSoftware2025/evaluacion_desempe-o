@@ -120,3 +120,12 @@ class EvaluacionEspecialistasController extends ActiveRecord
         }
     }
 }
+
+
+
+
+
+
+
+
+

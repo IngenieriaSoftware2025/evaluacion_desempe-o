@@ -23,5 +23,7 @@
     </div>
 </div>
 
+
 <!-- Incluir los estilos -->
 <link rel="stylesheet" href="<?= asset('build/css/evaluacionformulario/style.css') ?>">
+<script src="<?= asset('build/js/evaluacionformulario/index.js') ?>"></script>
