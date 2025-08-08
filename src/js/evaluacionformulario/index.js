@@ -617,6 +617,35 @@ const actualizarArrestosSeleccionado = (valor) => {
     }
 }
 
+// FUNCIÓN NUEVA PARA PERFIL BIOFÍSICO (esta función no existe en tu código)
+const actualizarPerfilSeleccionado = (valor) => {
+    const perfilTextos = {
+        '1': 'OBESIDAD II - 1 punto',
+        '2': 'OBESIDAD I - 2 puntos', 
+        '3': 'SOBREPESO - 3 puntos',
+        '4': 'DÉFICIT - 4 puntos',
+        '5': 'NORMAL - 5 puntos'
+    };
+
+    const perfilItems = document.querySelectorAll('.perfil-color .option-item');
+    const perfilPoints = document.querySelectorAll('.perfil-color .point-item');
+    
+    perfilItems.forEach(item => item.classList.remove('selected'));
+    perfilPoints.forEach(point => point.classList.remove('selected'));
+    
+    if (valor) {
+        const opcionSeleccionada = document.querySelector(`.perfil-color .option-item[data-value="${valor}"]`);
+        const puntoSeleccionado = document.querySelector(`.perfil-color .point-item[data-value="${valor}"]`);
+        
+        if (opcionSeleccionada) opcionSeleccionada.classList.add('selected');
+        if (puntoSeleccionado) puntoSeleccionado.classList.add('selected');
+        
+        calcularSumatoriaSeccionTercera();
+    }
+};
+
+
+
 const llenarSelectMeritos = (selectId, meritos, nota) => {
     const select = document.getElementById(selectId);
     if (!select) return;
@@ -787,7 +816,7 @@ const perfilRadios = document.querySelectorAll('input[name="bol_perfil"]');
 perfilRadios.forEach(radio => {
     radio.addEventListener('change', (e) => {
         if (e.target.checked) {
-            calcularSumatoriaSeccionTercera();
+            actualizarPerfilSeleccionado(e.target.value);
         }
     });
 });
