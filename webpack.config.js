@@ -1,5 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = {
   mode: 'development',
   entry: {
@@ -7,8 +8,8 @@ module.exports = {
     'js/inicio' : './src/js/inicio.js',
     'js/evaluacionespecialistas/index' : './src/js/evaluacionespecialistas/index.js',
     'js/evaluacionformulario/index' : './src/js/evaluacionformulario/index.js',
-
-    
+    'css/evaluacionformulario/style' : './src/css/evaluacionformulario/style.css',
+    'css/evaluacionespecialistas/style' : './src/css/evaluacionespecialistas/style.css'
   },
   output: {
     filename: '[name].js',
@@ -16,7 +17,7 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-        filename: 'styles.css'
+        filename: '[name].css'  
     })
   ],
   module: {

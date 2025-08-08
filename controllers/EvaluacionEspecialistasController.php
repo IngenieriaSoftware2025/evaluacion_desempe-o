@@ -8,13 +8,13 @@ use Model\ActiveRecord;
 
 class EvaluacionEspecialistasController extends ActiveRecord
 {
-
+    // RENDERIZAR PÁGINA PRINCIPAL
     public static function renderizarPagina(Router $router)
     {
         $router->render('evaluacionespecialistas/index', []);
     }
 
-    // para buscar especialistas por catálogo y grado
+    // BUSCAR ESPECIALISTAS POR CATÁLOGO Y GRADO
     public static function buscarAPI()
     {
         getHeadersApi();
@@ -22,18 +22,19 @@ class EvaluacionEspecialistasController extends ActiveRecord
             $catalogo = isset($_GET['catalogo']) ? trim($_GET['catalogo']) : null;
             $grado = isset($_GET['grado']) ? trim($_GET['grado']) : null;
 
-            // Condiciones base para especialistas activos
+            // CONDICIONES BASE PARA ESPECIALISTAS ACTIVOS
             $condiciones = [
                 "org_dependencia = 10030",
                 "gra_clase = 4", 
                 "per_situacion in (11)"
             ];
 
-            // catalogo
+            // FILTRO POR CATÁLOGO
             if ($catalogo && $catalogo !== '') {
                 $condiciones[] = "per_catalogo = {$catalogo}";
             }
-            // grado
+
+            // FILTRO POR GRADO
             if ($grado && $grado !== '') {
                 $grado_escaped = str_replace("'", "''", $grado);
                 $condiciones[] = "UPPER(gra_desc_md) LIKE UPPER('%{$grado_escaped}%')";
@@ -41,7 +42,7 @@ class EvaluacionEspecialistasController extends ActiveRecord
 
             $where = implode(" AND ", $condiciones);
 
-            // Consulta principal
+            // CONSULTA PRINCIPAL
             $sql = "SELECT per_catalogo as catalogo,  
                            TRIM(gra_desc_md) || ' ' || TRIM(per_nom1) || ' ' || TRIM(per_nom2) || ' ' || TRIM(per_ape1) || ' ' || TRIM(per_ape2) AS nombre_completo,
                            org_plaza_desc AS plaza,
@@ -54,7 +55,7 @@ class EvaluacionEspecialistasController extends ActiveRecord
 
             $data = self::fetchArray($sql);
 
-            // Limpiar datos
+            // LIMPIAR DATOS
             foreach ($data as &$row) {
                 if (isset($row['nombre_completo'])) {
                     $row['nombre_completo'] = preg_replace('/\s+/', ' ', trim($row['nombre_completo']));
@@ -84,8 +85,7 @@ class EvaluacionEspecialistasController extends ActiveRecord
         }
     }
 
-
-    //obtener grados disponibles para el filtro
+    // OBTENER GRADOS DISPONIBLES PARA EL FILTRO
     public static function obtenerGradosAPI()
     {
         getHeadersApi();

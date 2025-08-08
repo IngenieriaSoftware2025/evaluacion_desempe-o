@@ -2,12 +2,13 @@ import Swal from "sweetalert2";
 import DataTable from "datatables.net-bs5";
 import { lenguaje } from "../lenguaje";
 
+// ELEMENTOS DEL DOM
 const FormBusqueda = document.getElementById('FormBusqueda');
 const BtnBuscar = document.getElementById('BtnBuscar');
 const BtnLimpiar = document.getElementById('BtnLimpiar');
 const SelectGrado = document.getElementById('grado');
 
-// Cargar grados en el dropdown
+// CARGAR GRADOS EN EL DROPDOWN
 const CargarGrados = async () => {
     const url = '/evaluacion_desempe-o/API/evaluacionespecialistas/obtenerGrados';
     const config = {
@@ -31,6 +32,7 @@ const CargarGrados = async () => {
     }
 }
 
+// BUSCAR EVALUACIONES CON FILTROS
 const BuscarEvaluaciones = async () => {
     BtnBuscar.disabled = true;
     
@@ -80,7 +82,7 @@ const BuscarEvaluaciones = async () => {
     BtnBuscar.disabled = false;
 }
 
-// Cargar datos automáticamente al iniciar
+// CARGAR DATOS AUTOMÁTICAMENTE AL INICIAR
 const CargarDatosIniciales = async () => {
     const url = '/evaluacion_desempe-o/API/evaluacionespecialistas/buscar';
     const config = {
@@ -102,6 +104,7 @@ const CargarDatosIniciales = async () => {
     }
 }
 
+// CONFIGURACIÓN DE DATATABLE
 const datatable = new DataTable('#TableEvaluaciones', {
     dom: `
         <"row mt-3 justify-content-between" 
@@ -176,33 +179,31 @@ const datatable = new DataTable('#TableEvaluaciones', {
     ]
 });
 
+// LIMPIAR FORMULARIO Y RECARGAR DATOS
 const limpiarTodo = () => {
     FormBusqueda.reset();
-    // Recargar todos los datos después de limpiar
     CargarDatosIniciales();
 }
 
+// REDIRIGIR A PÁGINA DE INGRESO DE DATOS
 const IngresarDatos = async (e) => {
     e.preventDefault();
     const catalogo = e.currentTarget.dataset.catalogo;
-    
-    // Redirigir a la página de ingreso de datos
     window.location.href = `/evaluacion_desempe-o/ingresar-datos?catalogo=${catalogo}`;
 }
 
+// REDIRIGIR A PÁGINA DE IMPRESIÓN DE FORMULARIOS
 const ImprimirFormato = async (e) => {
     e.preventDefault();
     const catalogo = e.currentTarget.dataset.catalogo;
-    
-    // Redirigir a la página de impresión de formularios
     window.location.href = `/evaluacion_desempe-o/imprimir-formato?catalogo=${catalogo}`;
 }
 
-// Cargar datos al iniciar
+// INICIALIZACIÓN
 CargarGrados();
-CargarDatosIniciales(); // Cargar datos automáticamente
+CargarDatosIniciales();
 
-// Event listeners
+// EVENT LISTENERS
 datatable.on('click', '.ingreso-datos', IngresarDatos);
 datatable.on('click', '.imprimir-formato', ImprimirFormato);
 BtnBuscar.addEventListener('click', BuscarEvaluaciones);
