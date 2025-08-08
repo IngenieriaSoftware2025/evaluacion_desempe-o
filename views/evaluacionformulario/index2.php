@@ -106,6 +106,50 @@
         </div>
     </div>
 
+
+    <!-- Sección V: CATEGORÍA -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card main-card">
+            <div class="card-header bg-success text-white text-center header-gradient-success">
+                <div class="evaluation-icon">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <h4 class="mb-0 header-title">V. CATEGORÍA</h4>
+                <p class="mb-0">Resultado Final de la Evaluación</p>
+            </div>
+            <div class="card-body form-section">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h6>Punteo Salud y Conducta</h6>
+                        <div class="total-box-categoria" id="mostrar_total_salud">0</div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Punteo Conceptualización</h6>
+                        <div class="total-box-categoria" id="mostrar_total_conceptualizacion">0</div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>TOTAL FINAL</h6>
+                        <div class="total-box-final" id="mostrar_total_final">0</div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <h5>Categoría Asignada:</h5>
+                        <div class="categoria-resultado" id="categoria_resultado">
+                            <span class="badge badge-categoria" id="badge_categoria">CALCULANDO...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campo oculto para guardar el total final -->
+                <input type="hidden" id="total_final_evaluacion" name="total_final_evaluacion" value="0">
+            </div>
+        </div>
+    </div>
+</div>
+
     <!-- BOTONES DE NAVEGACIÓN -->
     <div class="row mt-4 mb-5">
         <div class="col-12">

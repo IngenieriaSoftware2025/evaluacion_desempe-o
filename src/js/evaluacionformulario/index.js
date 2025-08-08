@@ -778,7 +778,14 @@ const calcularSumatoriaSeccionTercera = () => {
     
     if (elemTotal) elemTotal.textContent = total;
     if (elemTotalHidden) elemTotalHidden.value = total;
+
+    // Guardar total en sessionStorage para página 2
+sessionStorage.setItem('totalSaludConducta', total);
+console.log('Total Salud y Conducta guardado en sesión:', total);
 }
+
+
+
 
 const deshabilitarControlesDemeritos = () => {
     const demeritosRadios = document.querySelectorAll('input[name="rango_demeritos"]');

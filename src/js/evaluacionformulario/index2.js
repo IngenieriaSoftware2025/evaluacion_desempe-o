@@ -168,7 +168,10 @@ const renderizarPreguntas = () => {
 
     // Calcular total inicial
     calcularTotalConceptualizacion();
+
 }
+
+
 
 // MANEJAR CAMBIO EN LAS RESPUESTAS
 const manejarCambioRespuesta = (event) => {
@@ -218,6 +221,16 @@ const calcularTotalConceptualizacion = () => {
     if (subtotalConceptualizacion) subtotalConceptualizacion.textContent = subtotal;
     if (totalConceptualizacion) totalConceptualizacion.textContent = total;
     if (bolTotalConcep) bolTotalConcep.value = total;
+
+    // Leer total de Salud y Conducta desde sessionStorage
+const totalSaludConducta = parseInt(sessionStorage.getItem('totalSaludConducta')) || 0;
+const totalGeneral = totalSaludConducta + total;
+
+console.log('Total Salud y Conducta (desde sesión):', totalSaludConducta);
+console.log('Total Conceptualización:', total);
+console.log('TOTAL GENERAL:', totalGeneral);
+// Actualizar Sección V - Categoría
+actualizarSeccionCategoria(totalSaludConducta, total, totalGeneral);
 }
 
 // VALIDAR FORMULARIO COMPLETO
@@ -312,6 +325,51 @@ const calcularTotalManual = () => {
 document.addEventListener('DOMContentLoaded', () => {
     CargarPreguntasConceptualizacion();
 });
+
+
+
+
+
+// FUNCIÓN PARA ACTUALIZAR SECCIÓN V - CATEGORÍA
+const actualizarSeccionCategoria = (totalSalud, totalConceptualizacion, totalFinal) => {
+    // Actualizar displays
+    const elemSalud = document.getElementById('mostrar_total_salud');
+    const elemConceptualizacion = document.getElementById('mostrar_total_conceptualizacion');
+    const elemTotalFinal = document.getElementById('mostrar_total_final');
+    const elemCategoria = document.getElementById('badge_categoria');
+    const elemTotalHidden = document.getElementById('total_final_evaluacion');
+    
+    if (elemSalud) elemSalud.textContent = totalSalud;
+    if (elemConceptualizacion) elemConceptualizacion.textContent = totalConceptualizacion;
+    if (elemTotalFinal) elemTotalFinal.textContent = totalFinal;
+    if (elemTotalHidden) elemTotalHidden.value = totalFinal;
+    
+    // Calcular categoría según rangos
+    let categoria = '';
+    let claseCSS = '';
+    
+    if (totalFinal >= 85) {
+        categoria = 'EXCELENTE';
+        claseCSS = 'bg-success';
+    } else if (totalFinal >= 70) {
+        categoria = 'MUY BUENO';
+        claseCSS = 'bg-primary';
+    } else if (totalFinal >= 55) {
+        categoria = 'REGULAR';
+        claseCSS = 'bg-warning';
+    } else {
+        categoria = 'INSATISFACTORIO';
+        claseCSS = 'bg-danger';
+    }
+    
+    if (elemCategoria) {
+        elemCategoria.textContent = categoria;
+        elemCategoria.className = `badge badge-categoria ${claseCSS} text-white`;
+    }
+    
+    console.log(`Categoría asignada: ${categoria} (${totalFinal}/100 puntos)`);
+}
+
 
 // EVENT LISTENERS
 if (BtnVolverPaginaAnterior) {
