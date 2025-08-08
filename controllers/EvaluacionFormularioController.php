@@ -55,7 +55,7 @@ class EvaluacionFormularioController extends ActiveRecord
 
             $especialista = $data[0];
             $especialista['nombre_completo'] = self::formatearNombreCompleto($especialista);
-            
+
             // Validar tiempo mínimo del evaluado (3+ meses)
             $validacionEvaluado = self::validarTiempoMinimo($especialista['tiempo_ocupar_puesto']);
             $especialista['puede_ser_evaluado'] = $validacionEvaluado['puede'];
@@ -67,7 +67,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Datos del evaluado obtenidos correctamente',
                 'data' => $especialista
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -123,7 +122,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Datos del evaluador obtenidos correctamente',
                 'data' => $evaluador
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -147,7 +145,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Validación realizada',
                 'data' => $validacion
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -159,26 +156,26 @@ class EvaluacionFormularioController extends ActiveRecord
     }
 
     // FUNCIÓN PARA VALIDAR TIEMPO MÍNIMO (3+ MESES)
-   private static function validarTiempoMinimo($tiempoPuesto)
-{
-    if (!$tiempoPuesto) {
-        return ['puede' => false, 'mensaje' => 'No se encontraron datos de tiempo'];
-    }
+    private static function validarTiempoMinimo($tiempoPuesto)
+    {
+        if (!$tiempoPuesto) {
+            return ['puede' => false, 'mensaje' => 'No se encontraron datos de tiempo'];
+        }
 
-    // Extraer años, meses y días del formato AAMMDD
-    $años = floor($tiempoPuesto / 10000);
-    $meses = floor(($tiempoPuesto % 10000) / 100);
-    $días = $tiempoPuesto % 100;
-    
-    // Convertir todo a meses
-    $totalMeses = ($años * 12) + $meses + ($días / 30);
-    
-    if ($totalMeses >= 3) {
-        return ['puede' => true, 'mensaje' => "Cumple con el tiempo mínimo ({$años} años, {$meses} meses, {$días} días)"];
-    } else {
-        return ['puede' => false, 'mensaje' => "No cumple con el tiempo mínimo de 3 meses. Tiempo actual: {$años} años, {$meses} meses, {$días} días"];
+        // Extraer años, meses y días del formato AAMMDD
+        $años = floor($tiempoPuesto / 10000);
+        $meses = floor(($tiempoPuesto % 10000) / 100);
+        $días = $tiempoPuesto % 100;
+
+        // Convertir todo a meses
+        $totalMeses = ($años * 12) + $meses + ($días / 30);
+
+        if ($totalMeses >= 3) {
+            return ['puede' => true, 'mensaje' => "Cumple con el tiempo mínimo ({$años} años, {$meses} meses, {$días} días)"];
+        } else {
+            return ['puede' => false, 'mensaje' => "No cumple con el tiempo mínimo de 3 meses. Tiempo actual: {$años} años, {$meses} meses, {$días} días"];
+        }
     }
-}
 
     // FUNCIONES EXISTENTES SIN CAMBIOS
     public static function guardarAPI()
@@ -280,18 +277,18 @@ class EvaluacionFormularioController extends ActiveRecord
             $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
             $anio_actual = 2025;
             $mes_actual = 8;
-            
+
             // Calcular los últimos 4 meses
             $meses = [];
             for ($i = 3; $i >= 0; $i--) {
                 $mes = $mes_actual - $i;
                 $anio = $anio_actual;
-                
+
                 if ($mes <= 0) {
                     $mes += 12;
                     $anio--;
                 }
-                
+
                 $meses[] = [
                     'mes' => $mes,
                     'anio' => $anio,
@@ -306,7 +303,7 @@ class EvaluacionFormularioController extends ActiveRecord
             foreach ($meses as $periodo) {
                 $primer_dia = 1;
                 $ultimo_dia = cal_days_in_month(CAL_GREGORIAN, $periodo['mes'], $periodo['anio']);
-                
+
                 $fecha_inicio = sprintf("%04d-%02d-%02d", $periodo['anio'], $periodo['mes'], $primer_dia);
                 $fecha_fin = sprintf("%04d-%02d-%02d", $periodo['anio'], $periodo['mes'], $ultimo_dia);
 
@@ -356,7 +353,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Evaluaciones PAFE obtenidas correctamente',
                 'data' => $respuesta
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -394,7 +390,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Deméritos obtenidos correctamente',
                 'data' => $respuesta
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -436,7 +431,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Arrestos obtenidos correctamente',
                 'data' => $respuesta
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -475,7 +469,6 @@ class EvaluacionFormularioController extends ActiveRecord
                 'mensaje' => 'Méritos obtenidos correctamente',
                 'data' => $data
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -577,7 +570,7 @@ class EvaluacionFormularioController extends ActiveRecord
     {
         $rangos = [
             0 => 'De 0 a 59 puntos',
-            2 => 'De 60 a 70 puntos', 
+            2 => 'De 60 a 70 puntos',
             3 => 'De 71 a 80 puntos',
             4 => 'De 81 a 90 puntos',
             5 => 'De 91 a más puntos'
@@ -613,116 +606,185 @@ class EvaluacionFormularioController extends ActiveRecord
     private static function obtenerNombreMes($mes)
     {
         $meses = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre'
         ];
         return $meses[$mes] ?? 'Mes inválido';
     }
 
+    public static function obtenerPreguntasConceptualizacionAPI()
+    {
+        getHeadersApi();
+        try {
+            $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
 
+            if (!$catalogo) {
+                http_response_code(400);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'El catálogo del evaluado es obligatorio'
+                ]);
+                return;
+            }
 
-
-
-
-public static function obtenerPreguntasConceptualizacionAPI()
-{
-    getHeadersApi();
-    try {
-        $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-
-        if (!$catalogo) {
-            http_response_code(400);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'El catálogo del evaluado es obligatorio'
-            ]);
-            return;
-        }
-
-        // Query para obtener la serie del especialista
-        $sql = "SELECT meom_serie FROM mper, morg, meom 
+            // Query para obtener la serie del especialista
+            $sql = "SELECT meom_serie FROM mper, morg, meom 
                 WHERE per_plaza = org_plaza 
                 AND org_ceom = meom_ceom 
                 AND per_catalogo = {$catalogo}";
 
-        $dataSerie = self::fetchArray($sql);
+            $dataSerie = self::fetchArray($sql);
 
-        if (empty($dataSerie)) {
-            http_response_code(404);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'No se encontró la serie para este especialista'
-            ]);
-            return;
-        }
+            if (empty($dataSerie)) {
+                http_response_code(404);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'No se encontró la serie para este especialista'
+                ]);
+                return;
+            }
 
-        $serie = strtoupper(trim($dataSerie[0]['meom_serie']));
-        
-        // Mapear serie a proyección según la lógica del profesor
-        $proyeccion = self::mapearSerieAProyeccion($serie);
-        
-        if ($proyeccion === null) {
-            http_response_code(400);
-            echo json_encode([
-                'codigo' => 0,
-                'mensaje' => 'Serie no válida para evaluación: ' . $serie
-            ]);
-            return;
-        }
+            $serie = strtoupper(trim($dataSerie[0]['meom_serie']));
 
-        // Obtener preguntas según la proyección
-        $sqlPreguntas = "SELECT pre_codigo, pre_descripcion, pre_proyeccion 
+            // Mapear serie a proyección según la lógica del profesor
+            $proyeccion = self::mapearSerieAProyeccion($serie);
+
+            if ($proyeccion === null) {
+                http_response_code(400);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'Serie no válida para evaluación: ' . $serie
+                ]);
+                return;
+            }
+
+            // Obtener preguntas según la proyección
+            $sqlPreguntas = "SELECT pre_codigo, pre_descripcion, pre_proyeccion 
                          FROM eva_preguntas 
                          WHERE pre_proyeccion = {$proyeccion} 
                          ORDER BY pre_codigo ASC";
 
-        $preguntas = self::fetchArray($sqlPreguntas);
+            $preguntas = self::fetchArray($sqlPreguntas);
 
-        // Obtener tipo de especialista
-        $sqlTipo = "SELECT tip_codigo, tip_descripcion 
+            // Obtener tipo de especialista
+            $sqlTipo = "SELECT tip_codigo, tip_descripcion 
                     FROM eva_tipo 
                     WHERE tip_codigo = {$proyeccion}";
 
-        $tipoData = self::fetchArray($sqlTipo);
-        $tipoDescripcion = !empty($tipoData) ? $tipoData[0]['tip_descripcion'] : 'ESPECIALISTA';
+            $tipoData = self::fetchArray($sqlTipo);
+            $tipoDescripcion = !empty($tipoData) ? $tipoData[0]['tip_descripcion'] : 'ESPECIALISTA';
 
-        http_response_code(200);
-        echo json_encode([
-            'codigo' => 1,
-            'mensaje' => 'Preguntas obtenidas correctamente',
-            'data' => [
-                'serie' => $serie,
-                'proyeccion' => $proyeccion,
-                'tipo_descripcion' => $tipoDescripcion,
-                'preguntas' => $preguntas,
-                'total_preguntas' => count($preguntas)
-            ]
-        ]);
-
-    } catch (Exception $e) {
-        http_response_code(400);
-        echo json_encode([
-            'codigo' => 0,
-            'mensaje' => 'Error al obtener preguntas de conceptualización',
-            'detalle' => $e->getMessage()
-        ]);
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'Preguntas obtenidas correctamente',
+                'data' => [
+                    'serie' => $serie,
+                    'proyeccion' => $proyeccion,
+                    'tipo_descripcion' => $tipoDescripcion,
+                    'preguntas' => $preguntas,
+                    'total_preguntas' => count($preguntas)
+                ]
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener preguntas de conceptualización',
+                'detalle' => $e->getMessage()
+            ]);
+        }
     }
-}
 
-// FUNCIÓN PRIVADA PARA MAPEAR SERIE A PROYECCIÓN
-private static function mapearSerieAProyeccion($serie)
-{
-    switch ($serie) {
-        case 'T':
-        case 'P':
-            return 1; // TÉCNICA
-        case 'E':
-            return 2; // ADMINISTRATIVA  
-        case 'O':
-            return 3; // OPERATIVA
-        default:
-            return null;
+    // FUNCIÓN PRIVADA PARA MAPEAR SERIE A PROYECCIÓN
+    private static function mapearSerieAProyeccion($serie)
+    {
+        switch ($serie) {
+            case 'T':
+            case 'P':
+                return 1; // TÉCNICA
+            case 'E':
+                return 2; // ADMINISTRATIVA  
+            case 'O':
+                return 3; // OPERATIVA
+            default:
+                return null;
+        }
     }
-}
+
+    // OBTENER ACCIONES MOTIVADORAS
+    public static function obtenerAccionesMotivadorasAPI()
+    {
+        getHeadersApi(); // Agregar esta línea
+        try {
+            $sql = "SELECT mot_codigo, mot_descripcion FROM acc_motivadora ORDER BY mot_descripcion";
+            $motivadoras = self::fetchArray($sql); // Cambiar Evaluacion por self
+
+            if ($motivadoras) {
+                http_response_code(200); // Agregar response code
+                echo json_encode([
+                    'codigo' => 1,
+                    'mensaje' => 'Acciones motivadoras obtenidas correctamente',
+                    'data' => $motivadoras
+                ]);
+            } else {
+                http_response_code(404); // Agregar response code
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'No se encontraron acciones motivadoras',
+                    'data' => []
+                ]);
+            }
+        } catch (Exception $e) {
+            http_response_code(400); // Agregar response code
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener acciones motivadoras: ' . $e->getMessage(),
+                'data' => []
+            ]);
+        }
+    }
+
+    // OBTENER ACCIONES CORRECTIVAS
+    public static function obtenerAccionesCorrectivasAPI()
+    {
+        getHeadersApi(); // Agregar esta línea
+        try {
+            $sql = "SELECT corr_codigo, corr_descripcion FROM acc_correctiva ORDER BY corr_descripcion";
+            $correctivas = self::fetchArray($sql); // Cambiar Evaluacion por self
+
+            if ($correctivas) {
+                http_response_code(200); // Agregar response code
+                echo json_encode([
+                    'codigo' => 1,
+                    'mensaje' => 'Acciones correctivas obtenidas correctamente',
+                    'data' => $correctivas
+                ]);
+            } else {
+                http_response_code(404); // Agregar response code
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'No se encontraron acciones correctivas',
+                    'data' => []
+                ]);
+            }
+        } catch (Exception $e) {
+            http_response_code(400); // Agregar response code
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al obtener acciones correctivas: ' . $e->getMessage(),
+                'data' => []
+            ]);
+        }
+    }
 }

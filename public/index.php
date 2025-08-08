@@ -47,4 +47,8 @@ $router->get('/index2.php', [EvaluacionFormularioController::class, 'renderizarP
 $router->get('/API/evaluacionformulario/obtenerPreguntasConceptualizacion', [EvaluacionFormularioController::class, 'obtenerPreguntasConceptualizacionAPI']);
 
 
+// ACCIONES MOTIVADORAS Y CORRECTIVAS
+$router->get('/API/evaluacionformulario/obtenerAccionesMotivadoras', [EvaluacionFormularioController::class, 'obtenerAccionesMotivadorasAPI']);
+$router->get('/API/evaluacionformulario/obtenerAccionesCorrectivas', [EvaluacionFormularioController::class, 'obtenerAccionesCorrectivasAPI']);
+
 $router->comprobarRutas();

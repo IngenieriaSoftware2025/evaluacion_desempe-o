@@ -24,6 +24,14 @@ const totalConceptualizacion = document.getElementById('total_conceptualizacion'
 let preguntasData = [];
 let respuestasActuales = {};
 
+// ELEMENTOS DEL DOM PARA SECCIONES VI, VII Y VIII
+const accionMotivadora = document.getElementById('accion_motivadora');
+const accionCorrectiva = document.getElementById('accion_correctiva');
+const observaciones = document.getElementById('observaciones');
+const bolAccionMot = document.getElementById('bol_accion_mot');
+const bolAccionCorrec = document.getElementById('bol_accion_correc');
+const bolObs = document.getElementById('bol_obs');
+
 // FUNCIÓN PARA OBTENER EL CATÁLOGO DE LA URL
 const obtenerCatalogoDeURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -171,8 +179,6 @@ const renderizarPreguntas = () => {
 
 }
 
-
-
 // MANEJAR CAMBIO EN LAS RESPUESTAS
 const manejarCambioRespuesta = (event) => {
     const radio = event.target;
@@ -223,14 +229,14 @@ const calcularTotalConceptualizacion = () => {
     if (bolTotalConcep) bolTotalConcep.value = total;
 
     // Leer total de Salud y Conducta desde sessionStorage
-const totalSaludConducta = parseInt(sessionStorage.getItem('totalSaludConducta')) || 0;
-const totalGeneral = totalSaludConducta + total;
+    const totalSaludConducta = parseInt(sessionStorage.getItem('totalSaludConducta')) || 0;
+    const totalGeneral = totalSaludConducta + total;
 
-console.log('Total Salud y Conducta (desde sesión):', totalSaludConducta);
-console.log('Total Conceptualización:', total);
-console.log('TOTAL GENERAL:', totalGeneral);
-// Actualizar Sección V - Categoría
-actualizarSeccionCategoria(totalSaludConducta, total, totalGeneral);
+    console.log('Total Salud y Conducta (desde sesión):', totalSaludConducta);
+    console.log('Total Conceptualización:', total);
+    console.log('TOTAL GENERAL:', totalGeneral);
+    // Actualizar Sección V - Categoría
+    actualizarSeccionCategoria(totalSaludConducta, total, totalGeneral);
 }
 
 // VALIDAR FORMULARIO COMPLETO
@@ -321,14 +327,57 @@ const calcularTotalManual = () => {
     });
 }
 
-// INICIALIZACIÓN
-document.addEventListener('DOMContentLoaded', () => {
-    CargarPreguntasConceptualizacion();
-});
+// CARGAR ACCIONES MOTIVADORAS
+const cargarAccionesMotivadoras = async () => {
+    try {
+        const url = '/evaluacion_desempe-o/API/evaluacionformulario/obtenerAccionesMotivadoras';
+        const respuesta = await fetch(url, { method: 'GET' });
+        const datos = await respuesta.json();
 
+        if (datos.codigo === 1 && datos.data.length > 0) {
+            // Limpiar select
+            accionMotivadora.innerHTML = '<option value="">-- Seleccione una acción motivadora --</option>';
+            
+            // Agregar opciones
+            datos.data.forEach(accion => {
+                const option = document.createElement('option');
+                option.value = accion.mot_codigo;
+                option.textContent = accion.mot_descripcion;
+                accionMotivadora.appendChild(option);
+            });
+        } else {
+            console.log('No se encontraron acciones motivadoras');
+        }
+    } catch (error) {
+        console.error('Error al cargar acciones motivadoras:', error);
+    }
+};
 
+// CARGAR ACCIONES CORRECTIVAS
+const cargarAccionesCorrectivas = async () => {
+    try {
+        const url = '/evaluacion_desempe-o/API/evaluacionformulario/obtenerAccionesCorrectivas';
+        const respuesta = await fetch(url, { method: 'GET' });
+        const datos = await respuesta.json();
 
-
+        if (datos.codigo === 1 && datos.data.length > 0) {
+            // Limpiar select
+            accionCorrectiva.innerHTML = '<option value="">-- Seleccione una acción correctiva --</option>';
+            
+            // Agregar opciones
+            datos.data.forEach(accion => {
+                const option = document.createElement('option');
+                option.value = accion.corr_codigo;
+                option.textContent = accion.corr_descripcion;
+                accionCorrectiva.appendChild(option);
+            });
+        } else {
+            console.log('No se encontraron acciones correctivas');
+        }
+    } catch (error) {
+        console.error('Error al cargar acciones correctivas:', error);
+    }
+};
 
 // FUNCIÓN PARA ACTUALIZAR SECCIÓN V - CATEGORÍA
 const actualizarSeccionCategoria = (totalSalud, totalConceptualizacion, totalFinal) => {
@@ -370,8 +419,35 @@ const actualizarSeccionCategoria = (totalSalud, totalConceptualizacion, totalFin
     console.log(`Categoría asignada: ${categoria} (${totalFinal}/100 puntos)`);
 }
 
+// EVENT LISTENERS PARA LAS NUEVAS SECCIONES
+if (accionMotivadora) {
+    accionMotivadora.addEventListener('change', (e) => {
+        const valor = e.target.value;
+        if (bolAccionMot) {
+            bolAccionMot.value = valor || '';
+        }
+    });
+}
 
-// EVENT LISTENERS
+if (accionCorrectiva) {
+    accionCorrectiva.addEventListener('change', (e) => {
+        const valor = e.target.value;
+        if (bolAccionCorrec) {
+            bolAccionCorrec.value = valor || '';
+        }
+    });
+}
+
+if (observaciones) {
+    observaciones.addEventListener('input', (e) => {
+        const texto = e.target.value;
+        if (bolObs) {
+            bolObs.value = texto || '';
+        }
+    });
+}
+
+// EVENT LISTENERS EXISTENTES
 if (BtnVolverPaginaAnterior) {
     BtnVolverPaginaAnterior.addEventListener('click', VolverPaginaAnterior);
 }
@@ -383,3 +459,12 @@ if (BtnCalcularTotal) {
 if (BtnContinuar) {
     BtnContinuar.addEventListener('click', ContinuarSiguientePagina);
 }
+
+// INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', () => {
+    CargarPreguntasConceptualizacion();
+    
+    // CARGAR NUEVAS SECCIONES
+    cargarAccionesMotivadoras();
+    cargarAccionesCorrectivas();
+});

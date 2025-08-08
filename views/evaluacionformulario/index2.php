@@ -13,12 +13,12 @@
                         <span id="tipo_descripcion">ESPECIALISTAS</span>
                     </div>
                 </div>
-                
+
                 <div class="card-body form-section">
                     <!-- Instrucciones -->
                     <div class="instructions-box mb-4">
                         <div class="instruction-text">
-                            <strong>Instrucciones:</strong> A continuación encontrará quince aspectos relacionados con el 
+                            <strong>Instrucciones:</strong> A continuación encontrará quince aspectos relacionados con el
                             desempeño laboral del evaluado; léalos detenidamente y marque con una X en la escala de la derecha.
                         </div>
                     </div>
@@ -108,47 +108,120 @@
 
 
     <!-- Sección V: CATEGORÍA -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card main-card">
-            <div class="card-header bg-success text-white text-center header-gradient-success">
-                <div class="evaluation-icon">
-                    <i class="bi bi-trophy"></i>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card main-card">
+                <div class="card-header bg-success text-white text-center header-gradient-success">
+                    <div class="evaluation-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <h4 class="mb-0 header-title">V. CATEGORÍA</h4>
+                    <p class="mb-0">Resultado Final de la Evaluación</p>
                 </div>
-                <h4 class="mb-0 header-title">V. CATEGORÍA</h4>
-                <p class="mb-0">Resultado Final de la Evaluación</p>
-            </div>
-            <div class="card-body form-section">
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <h6>Punteo Salud y Conducta</h6>
-                        <div class="total-box-categoria" id="mostrar_total_salud">0</div>
-                    </div>
-                    <div class="col-md-4">
-                        <h6>Punteo Conceptualización</h6>
-                        <div class="total-box-categoria" id="mostrar_total_conceptualizacion">0</div>
-                    </div>
-                    <div class="col-md-4">
-                        <h6>TOTAL FINAL</h6>
-                        <div class="total-box-final" id="mostrar_total_final">0</div>
-                    </div>
-                </div>
-                
-                <div class="row mt-4">
-                    <div class="col-12 text-center">
-                        <h5>Categoría Asignada:</h5>
-                        <div class="categoria-resultado" id="categoria_resultado">
-                            <span class="badge badge-categoria" id="badge_categoria">CALCULANDO...</span>
+                <div class="card-body form-section">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h6>Punteo Salud y Conducta</h6>
+                            <div class="total-box-categoria" id="mostrar_total_salud">0</div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Punteo Conceptualización</h6>
+                            <div class="total-box-categoria" id="mostrar_total_conceptualizacion">0</div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>TOTAL FINAL</h6>
+                            <div class="total-box-final" id="mostrar_total_final">0</div>
                         </div>
                     </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <h5>Categoría Asignada:</h5>
+                            <div class="categoria-resultado" id="categoria_resultado">
+                                <span class="badge badge-categoria" id="badge_categoria">CALCULANDO...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo oculto para guardar el total final -->
+                    <input type="hidden" id="total_final_evaluacion" name="total_final_evaluacion" value="0">
                 </div>
-                
-                <!-- Campo oculto para guardar el total final -->
-                <input type="hidden" id="total_final_evaluacion" name="total_final_evaluacion" value="0">
             </div>
         </div>
     </div>
-</div>
+
+    <!-- SECCIÓN VI - ACCIONES MOTIVADORAS -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card modern-card">
+                <div class="card-header modern-header">
+                    <h4><i class="bi bi-award-fill me-2"></i>VI. ACCIONES MOTIVADORAS</h4>
+                </div>
+                <div class="card-body form-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="accion_motivadora" class="form-label">
+                                <i class="bi bi-plus-circle me-2"></i>Seleccione una acción motivadora (opcional)
+                            </label>
+                            <select class="form-select modern-select" id="accion_motivadora" name="accion_motivadora">
+                                <option value="">-- Seleccione una acción motivadora --</option>
+                            </select>
+                            <input type="hidden" id="bol_accion_mot" name="bol_accion_mot" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN VII - CORRECTIVAS -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card modern-card">
+                <div class="card-header modern-header">
+                    <h4><i class="bi bi-exclamation-triangle-fill me-2"></i>VII. CORRECTIVAS</h4>
+                </div>
+                <div class="card-body form-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="accion_correctiva" class="form-label">
+                                <i class="bi bi-gear me-2"></i>Seleccione una acción correctiva (opcional)
+                            </label>
+                            <select class="form-select modern-select" id="accion_correctiva" name="accion_correctiva">
+                                <option value="">-- Seleccione una acción correctiva --</option>
+                            </select>
+                            <input type="hidden" id="bol_accion_correc" name="bol_accion_correc" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN VIII - OBSERVACIONES -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card modern-card">
+                <div class="card-header modern-header">
+                    <h4><i class="bi bi-chat-text-fill me-2"></i>VIII. OBSERVACIONES</h4>
+                </div>
+                <div class="card-body form-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <label for="observaciones" class="form-label">
+                                <i class="bi bi-pencil me-2"></i>Observaciones de la evaluación del desempeño
+                            </label>
+                            <textarea class="form-control modern-input" id="observaciones" name="observaciones" rows="4"
+                                placeholder="Ingrese las observaciones pertinentes sobre la evaluación del especialista..."
+                                maxlength="500"></textarea>
+                            <div class="form-text">Máximo 500 caracteres</div>
+                            <input type="hidden" id="bol_obs" name="bol_obs" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- BOTONES DE NAVEGACIÓN -->
     <div class="row mt-4 mb-5">
