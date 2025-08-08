@@ -121,11 +121,11 @@
                 <div class="card-body form-section">
                     <div class="row text-center">
                         <div class="col-md-4">
-                            <h6>Punteo Salud y Conducta</h6>
+                            <h6>PUNTEO DE SALUD Y CONDUCTA</h6>
                             <div class="total-box-categoria" id="mostrar_total_salud">0</div>
                         </div>
                         <div class="col-md-4">
-                            <h6>Punteo Conceptualización</h6>
+                            <h6>PUNTEO DE CONCEPTUALIZACION</h6>
                             <div class="total-box-categoria" id="mostrar_total_conceptualizacion">0</div>
                         </div>
                         <div class="col-md-4">
@@ -136,7 +136,7 @@
 
                     <div class="row mt-4">
                         <div class="col-12 text-center">
-                            <h5>Categoría Asignada:</h5>
+                            <h5>CATEGORIA ASIGNADA</h5>
                             <div class="categoria-resultado" id="categoria_resultado">
                                 <span class="badge badge-categoria" id="badge_categoria">CALCULANDO...</span>
                             </div>
@@ -179,7 +179,7 @@
         <div class="col-12">
             <div class="card modern-card">
                 <div class="card-header modern-header">
-                    <h4><i class="bi bi-exclamation-triangle-fill me-2"></i>VII. CORRECTIVAS</h4>
+                    <h4><i class="bi bi-exclamation-triangle-fill me-2"></i>VII. ACCIONES CORRECTIVAS</h4>
                 </div>
                 <div class="card-body form-section">
                     <div class="row">
@@ -214,7 +214,7 @@
                             <textarea class="form-control modern-input" id="observaciones" name="observaciones" rows="4"
                                 placeholder="Ingrese las observaciones pertinentes sobre la evaluación del especialista..."
                                 maxlength="500"></textarea>
-                            <div class="form-text">Máximo 500 caracteres</div>
+                          
                             <input type="hidden" id="bol_obs" name="bol_obs" value="">
                         </div>
                     </div>
