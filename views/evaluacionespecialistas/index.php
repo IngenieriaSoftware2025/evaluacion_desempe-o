@@ -6,12 +6,9 @@
                     <div class="evaluation-icon">
                         <i class="bi bi-clipboard-check"></i>
                     </div>
-                    <h5 class="mb-1 header-subtitle">Sistema de Gestión Militar - EMDN</h5>
-                    <h4 class="mb-0 header-title">EVALUACIÓN DEL DESEMPEÑO - ESPECIALISTAS</h4>
-                    <div class="military-badge mt-3">
-                        <i class="bi bi-shield-check me-2"></i>
-                        Directiva EMDN-009-SAGE-2008
-                    </div>
+                    
+                    <h4 class="mb-0 header-title">EVALUACIÓN DEL DESEMPEÑO PARA ESPECIALISTAS</h4>
+                    
                 </div>
                 <div class="card-body form-section">
                     <form id="FormBusqueda" enctype="multipart/form-data">
@@ -33,16 +30,6 @@
                             </div>
                         </div>
                         
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <div class="search-info">
-                                    <small class="text-muted">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Los datos se cargan desde morg, mper y grados (especialistas activos). Filtros: catálogo y grado.
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
                         
                         <div class="text-center button-section">
                             <button class="btn btn-primary btn-modern me-3" type="button" id="BtnBuscar">
@@ -66,14 +53,12 @@
                         <i class="bi bi-table me-2"></i>
                         <h4 class="mb-0">Especialistas Activos para Evaluación</h4>
                     </div>
-                    <div class="text-center mt-2">
-                        <small class="opacity-75">Tablas: morg → mper → grados | Filtro: gra_clase = 4, per_situacion = 11</small>
-                    </div>
+                
                 </div>
                 <div class="card-body table-section">
                     <div class="table-responsive">
                         <table class="table table-modern" id="TableEvaluaciones">
-                            <!-- DataTable generará las columnas -->
+                            <!-- DataTable genera las columnas -->
                         </table>
                     </div>
                 </div>
@@ -81,6 +66,12 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
 
 <style>
     :root {
@@ -106,7 +97,7 @@
         color: var(--text-dark);
     }
     
-    /* Cards mejoradas */
+
     .main-card, .table-card {
         border: none;
         border-radius: 20px;
@@ -122,7 +113,7 @@
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     }
     
-    /* Header mejorado */
+ 
     .header-gradient {
         background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 50%, var(--accent-blue) 100%) !important;
         border-radius: 20px 20px 0 0 !important;
@@ -166,7 +157,7 @@
         font-size: 1.75rem;
     }
     
-    /* Ícono de evaluación mejorado */
+
     .evaluation-icon {
         width: 80px;
         height: 80px;
@@ -193,7 +184,7 @@
         50% { transform: scale(1.05); }
     }
     
-    /* Badge militar mejorado */
+
     .military-badge {
         background: linear-gradient(135deg, var(--success-green) 0%, var(--accent-blue) 100%);
         color: white;
@@ -210,13 +201,13 @@
         border: 2px solid rgba(255,255,255,0.2);
     }
     
-    /* Sección de formulario */
+
     .form-section {
         padding: 3rem 2.5rem;
         background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
     }
     
-    /* Labels mejorados */
+
     .form-label {
         font-weight: 600;
         color: var(--primary-blue);
@@ -230,7 +221,7 @@
         color: var(--accent-blue);
     }
     
-    /* Inputs modernos */
+ 
     .modern-input, .modern-select {
         border: 2px solid var(--border-light);
         border-radius: 12px;
@@ -253,7 +244,7 @@
         transform: translateY(-1px);
     }
     
-    /* Información de búsqueda */
+
     .search-info {
         padding: 1rem;
         background: linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
@@ -262,14 +253,13 @@
         width: 100%;
     }
     
-    /* Sección de botones */
+
     .button-section {
         padding: 2rem 0 1rem 0;
         border-top: 1px solid rgba(229, 231, 235, 0.5);
         margin-top: 1rem;
     }
     
-    /* Botones modernos */
     .btn-modern {
         border-radius: 12px;
         padding: 0.875rem 2rem;
@@ -321,7 +311,7 @@
         background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
     }
     
-    /* Header de tabla mejorado */
+
     .table-header-gradient {
         background: linear-gradient(135deg, #101c3c 0%, #1e3a8a 50%, #3b82f6 100%) !important;
         border-radius: 20px 20px 0 0 !important;
@@ -347,13 +337,13 @@
         font-weight: 600;
     }
     
-    /* Sección de tabla */
+
     .table-section {
         padding: 0;
         background: white;
     }
     
-    /* Tabla moderna */
+
     .table-modern {
         border-radius: 0 0 20px 20px;
         overflow: hidden;
@@ -402,7 +392,7 @@
         font-size: 0.9rem;
     }
     
-    /* Badges mejorados */
+
     .badge {
         padding: 0.5rem 0.875rem;
         border-radius: 8px;
@@ -412,7 +402,7 @@
         letter-spacing: 0.025em;
     }
     
-    /* Botones de acción */
+
     .btn-sm {
         padding: 0.375rem 0.75rem;
         font-size: 0.875rem;
@@ -425,7 +415,7 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     
-    /* Responsive mejorado */
+
     @media (max-width: 768px) {
         .container {
             padding-left: 1rem;
