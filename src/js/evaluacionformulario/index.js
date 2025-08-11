@@ -78,7 +78,7 @@ const CargarDatosEvaluado = async () => {
         return;
     }
 
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerDatosEvaluado?catalogo=${catalogoEvaluado}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerDatosEvaluado?catalogo=${catalogoEvaluado}`;
     const config = { method: 'GET' }
 
     try {
@@ -145,7 +145,7 @@ const CargarDatosEvaluador = async (catalogo) => {
         return;
     }
 
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerDatosEvaluador?catalogo=${catalogo}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerDatosEvaluador?catalogo=${catalogo}`;
     const config = { method: 'GET' }
 
     try {
@@ -268,7 +268,7 @@ const CargarDatosPafe = async (catalogo) => {
 
     mostrarInfoPafe('info', 'Cargando evaluaciones PAFE...');
 
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerPafesEvaluado?catalogo=${catalogo}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerPafesEvaluado?catalogo=${catalogo}`;
     const config = { method: 'GET' }
 
     try {
@@ -327,7 +327,7 @@ const CargarDatosPafe = async (catalogo) => {
 const CargarDatosDemeritos = async (catalogo) => {
     if (!catalogo) return;
 
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerDemeritosEvaluado?catalogo=${catalogo}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerDemeritosEvaluado?catalogo=${catalogo}`;
     const config = { method: 'GET' }
 
     try {
@@ -353,7 +353,7 @@ const CargarDatosDemeritos = async (catalogo) => {
 const CargarDatosArrestos = async (catalogo) => {
     if (!catalogo) return;
 
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerArrestosEvaluado?catalogo=${catalogo}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerArrestosEvaluado?catalogo=${catalogo}`;
     const config = { method: 'GET' }
 
     try {
@@ -377,7 +377,7 @@ const CargarDatosArrestos = async (catalogo) => {
 
 // CARGAR MÉRITOS POR NOTA
 const CargarMeritos = async (nota) => {
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerMeritos?nota=${nota}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerMeritos?nota=${nota}`;
     const config = { method: 'GET' }
 
     try {
@@ -417,7 +417,7 @@ const CargarTodosLosMeritos = async () => {
 
 // NAVEGACIÓN - VOLVER AL LISTADO
 const VolverAlListado = () => {
-    window.location.href = '/evaluacion_desempe-o/evaluacionespecialistas';
+    window.location.href = '/evaluacion_desempeno/evaluacionespecialistas';
 }
 
 // NAVEGACIÓN - IR A PÁGINA SIGUIENTE
@@ -428,7 +428,7 @@ const IrPaginaSiguiente = () => {
         
         if (catalogoEvaluado) {
             // Llevar el catálogo en la URL
-            window.location.href = `/evaluacion_desempe-o/index2.php?catalogo=${catalogoEvaluado}`;
+            window.location.href = `/evaluacion_desempeno/index2.php?catalogo=${catalogoEvaluado}`;
         } else {
             Swal.fire({
                 position: "center",

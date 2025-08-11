@@ -711,6 +711,7 @@ class EvaluacionFormularioController extends ActiveRecord
     {
         switch ($serie) {
             case 'T':
+                
             case 'P':
                 return 1; // TÉCNICA
             case 'E':

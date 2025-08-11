@@ -10,7 +10,7 @@ const SelectGrado = document.getElementById('grado');
 
 // CARGAR GRADOS EN EL DROPDOWN
 const CargarGrados = async () => {
-    const url = '/evaluacion_desempe-o/API/evaluacionespecialistas/obtenerGrados';
+    const url = '/evaluacion_desempeno/API/evaluacionespecialistas/obtenerGrados';
     const config = {
         method: 'GET'
     }
@@ -39,7 +39,7 @@ const BuscarEvaluaciones = async () => {
     const catalogo = document.getElementById('catalogo').value;
     const grado = document.getElementById('grado').value;
 
-    let url = '/evaluacion_desempe-o/API/evaluacionespecialistas/buscar?';
+    let url = '/evaluacion_desempeno/API/evaluacionespecialistas/buscar?';
     
     const params = [];
     if (catalogo) params.push(`catalogo=${encodeURIComponent(catalogo)}`);
@@ -84,7 +84,7 @@ const BuscarEvaluaciones = async () => {
 
 // CARGAR DATOS AUTOMÁTICAMENTE AL INICIAR
 const CargarDatosIniciales = async () => {
-    const url = '/evaluacion_desempe-o/API/evaluacionespecialistas/buscar';
+    const url = '/evaluacion_desempeno/API/evaluacionespecialistas/buscar';
     const config = {
         method: 'GET'
     }
@@ -189,14 +189,14 @@ const limpiarTodo = () => {
 const IngresarDatos = async (e) => {
     e.preventDefault();
     const catalogo = e.currentTarget.dataset.catalogo;
-    window.location.href = `/evaluacion_desempe-o/ingresar-datos?catalogo=${catalogo}`;
+    window.location.href = `/evaluacion_desempeno/ingresar-datos?catalogo=${catalogo}`;
 }
 
 // REDIRIGIR A PÁGINA DE IMPRESIÓN DE FORMULARIOS
 const ImprimirFormato = async (e) => {
     e.preventDefault();
     const catalogo = e.currentTarget.dataset.catalogo;
-    window.location.href = `/evaluacion_desempe-o/imprimir-formato?catalogo=${catalogo}`;
+    window.location.href = `/evaluacion_desempeno/imprimir-formato?catalogo=${catalogo}`;
 }
 
 // INICIALIZACIÓN

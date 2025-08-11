@@ -51,7 +51,7 @@ const CargarPreguntasConceptualizacion = async () => {
     mostrarLoading(true);
     ocultarError();
 
-    const url = `/evaluacion_desempe-o/API/evaluacionformulario/obtenerPreguntasConceptualizacion?catalogo=${catalogo}`;
+    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerPreguntasConceptualizacion?catalogo=${catalogo}`;
     const config = { method: 'GET' }
 
     try {
@@ -283,9 +283,9 @@ const ocultarError = () => {
 const VolverPaginaAnterior = () => {
     const catalogo = obtenerCatalogoDeURL();
     if (catalogo) {
-        window.location.href = `/evaluacion_desempe-o/ingresar-datos?catalogo=${catalogo}`;
+        window.location.href = `/evaluacion_desempeno/ingresar-datos?catalogo=${catalogo}`;
     } else {
-        window.location.href = `/evaluacion_desempe-o/evaluacionespecialistas`;
+        window.location.href = `/evaluacion_desempeno/evaluacionespecialistas`;
     }
 }
 
@@ -330,7 +330,7 @@ const calcularTotalManual = () => {
 // CARGAR ACCIONES MOTIVADORAS
 const cargarAccionesMotivadoras = async () => {
     try {
-        const url = '/evaluacion_desempe-o/API/evaluacionformulario/obtenerAccionesMotivadoras';
+        const url = '/evaluacion_desempeno/API/evaluacionformulario/obtenerAccionesMotivadoras';
         const respuesta = await fetch(url, { method: 'GET' });
         const datos = await respuesta.json();
 
@@ -356,7 +356,7 @@ const cargarAccionesMotivadoras = async () => {
 // CARGAR ACCIONES CORRECTIVAS
 const cargarAccionesCorrectivas = async () => {
     try {
-        const url = '/evaluacion_desempe-o/API/evaluacionformulario/obtenerAccionesCorrectivas';
+        const url = '/evaluacion_desempeno/API/evaluacionformulario/obtenerAccionesCorrectivas';
         const respuesta = await fetch(url, { method: 'GET' });
         const datos = await respuesta.json();
 
