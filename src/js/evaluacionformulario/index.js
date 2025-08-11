@@ -35,6 +35,15 @@ const alertaValidacion = document.getElementById('alerta_validacion');
 const mensajeValidacion = document.getElementById('mensaje_validacion');
 const errorEvaluadorCatalogo = document.getElementById('error_evaluador_catalogo');
 
+
+const anioEvaluacion = document.getElementById('anio_evaluacion');
+const bolAnio = document.getElementById('bol_anio');
+
+// Obtener año actual y asignarlo
+const anioActual = new Date().getFullYear();
+anioEvaluacion.value = anioActual;
+bolAnio.value = anioActual;
+
 // Variables de control
 let datosEvaluadorCargados = false;
 let evaluadorValidado = false;

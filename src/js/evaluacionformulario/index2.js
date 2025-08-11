@@ -34,7 +34,7 @@ const bolObs = document.getElementById('bol_obs');
 
 // FUNCIÓN PARA OBTENER EL CATÁLOGO DE LA URL
 const obtenerCatalogoDeURL = () => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     return urlParams.get('catalogo');
 }
 
@@ -283,9 +283,9 @@ const ocultarError = () => {
 const VolverPaginaAnterior = () => {
     const catalogo = obtenerCatalogoDeURL();
     if (catalogo) {
-        window.location.href = `/evaluacion_desempeno/ingresar-datos?catalogo=${catalogo}`;
+        location.href = `/evaluacion_desempeno/ingresar-datos?catalogo=${catalogo}`;
     } else {
-        window.location.href = `/evaluacion_desempeno/evaluacionespecialistas`;
+        location.href = `/evaluacion_desempeno/evaluacionespecialistas`;
     }
 }
 
@@ -419,52 +419,13 @@ const actualizarSeccionCategoria = (totalSalud, totalConceptualizacion, totalFin
     console.log(`Categoría asignada: ${categoria} (${totalFinal}/100 puntos)`);
 }
 
-// EVENT LISTENERS PARA LAS NUEVAS SECCIONES
-if (accionMotivadora) {
-    accionMotivadora.addEventListener('change', (e) => {
-        const valor = e.target.value;
-        if (bolAccionMot) {
-            bolAccionMot.value = valor || '';
-        }
-    });
-}
-
-if (accionCorrectiva) {
-    accionCorrectiva.addEventListener('change', (e) => {
-        const valor = e.target.value;
-        if (bolAccionCorrec) {
-            bolAccionCorrec.value = valor || '';
-        }
-    });
-}
-
-if (observaciones) {
-    observaciones.addEventListener('input', (e) => {
-        const texto = e.target.value;
-        if (bolObs) {
-            bolObs.value = texto || '';
-        }
-    });
-}
-
-// EVENT LISTENERS EXISTENTES
-if (BtnVolverPaginaAnterior) {
-    BtnVolverPaginaAnterior.addEventListener('click', VolverPaginaAnterior);
-}
-
-if (BtnCalcularTotal) {
-    BtnCalcularTotal.addEventListener('click', calcularTotalManual);
-}
-
-if (BtnContinuar) {
-    BtnContinuar.addEventListener('click', ContinuarSiguientePagina);
-}
-
-// INICIALIZACIÓN
-document.addEventListener('DOMContentLoaded', () => {
-    CargarPreguntasConceptualizacion();
-    
-    // CARGAR NUEVAS SECCIONES
-    cargarAccionesMotivadoras();
-    cargarAccionesCorrectivas();
-});
+// EVENT LISTENERS PARA NUEVAS SECCIONES
+accionMotivadora.addEventListener('change', (e) => { bolAccionMot.value = e.target.value || ''; });
+accionCorrectiva.addEventListener('change', (e) => { bolAccionCorrec.value = e.target.value || ''; });
+observaciones.addEventListener('input', (e) => { bolObs.value = e.target.value || ''; });
+BtnVolverPaginaAnterior.addEventListener('click', VolverPaginaAnterior);
+BtnCalcularTotal.addEventListener('click', calcularTotalManual);
+BtnContinuar.addEventListener('click', ContinuarSiguientePagina);
+CargarPreguntasConceptualizacion();
+cargarAccionesMotivadoras();
+cargarAccionesCorrectivas();

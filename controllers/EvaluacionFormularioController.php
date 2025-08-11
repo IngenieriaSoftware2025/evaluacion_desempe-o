@@ -275,7 +275,7 @@ class EvaluacionFormularioController extends ActiveRecord
         getHeadersApi();
         try {
             $catalogo = filter_var($_GET['catalogo'], FILTER_SANITIZE_NUMBER_INT);
-            $anio_actual = 2025;
+            $anio_actual = date('Y');
             $mes_actual = 8;
 
             // Calcular los últimos 4 meses

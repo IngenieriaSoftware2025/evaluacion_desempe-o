@@ -85,7 +85,7 @@
                     <form id="FormEvaluacion">
                         <!-- Campos ocultos -->
                         <input type="hidden" id="bol_cat_evaluado" name="bol_cat_evaluado">
-                        <input type="hidden" id="bol_anio" name="bol_anio" value="2025">
+                       <input type="hidden" id="bol_anio" name="bol_anio">
                         <input type="hidden" id="bol_ceom" name="bol_ceom">
 
                         <div class="row mb-3">
@@ -138,7 +138,7 @@
                                 <label class="form-label">
                                     <i class="bi bi-calendar-check me-1"></i>Año de la Evaluación
                                 </label>
-                                <input type="text" class="form-control modern-input" value="2025" readonly>
+                               <input type="text" class="form-control modern-input" id="anio_evaluacion" readonly>
                             </div>
                         </div>
 
