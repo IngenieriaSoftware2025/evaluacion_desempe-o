@@ -1,16 +1,17 @@
-<?php 
+<?php
 require_once __DIR__ . '/../includes/app.php';
 
 
 use MVC\Router;
 use Controllers\AppController;
+use Controllers\EstadisticasController;
 use Controllers\EvaluacionEspecialistasController;
 use Controllers\EvaluacionFormularioController;
 
 $router = new Router();
 $router->setBaseURL('/' . $_ENV['APP_NAME']);
 
-$router->get('/', [AppController::class,'index']);
+$router->get('/', [AppController::class, 'index']);
 
 
 // EVALUACIÓN DE ESPECIALISTAS
@@ -39,7 +40,7 @@ $router->get('/API/evaluacionformulario/obtenerArrestosEvaluado', [EvaluacionFor
 // MÉRITOS
 $router->get('/API/evaluacionformulario/obtenerMeritos', [EvaluacionFormularioController::class, 'obtenerMeritosAPI']);
 
-// FORMULARIO DE EVALUACIÓN DEL DESEMPEÑO - PÁGINA 2
+// FORMULARIO DE EVALUACIÓN DEL DESEMPEÑO PÁGINA 2
 $router->get('/index2.php', [EvaluacionFormularioController::class, 'renderizarPagina2']);
 
 
@@ -50,5 +51,15 @@ $router->get('/API/evaluacionformulario/obtenerPreguntasConceptualizacion', [Eva
 // ACCIONES MOTIVADORAS Y CORRECTIVAS
 $router->get('/API/evaluacionformulario/obtenerAccionesMotivadoras', [EvaluacionFormularioController::class, 'obtenerAccionesMotivadorasAPI']);
 $router->get('/API/evaluacionformulario/obtenerAccionesCorrectivas', [EvaluacionFormularioController::class, 'obtenerAccionesCorrectivasAPI']);
+
+
+// ESTADÍSTICAS 
+$router->get('/estadisticas', [EstadisticasController::class, 'renderizarPagina']);
+$router->get('/estadisticas/buscarAPI', [EstadisticasController::class, 'buscarAPI']);
+$router->get('/estadisticas/aptosAscensoAPI', [EstadisticasController::class, 'aptosAscensoAPI']);
+$router->get('/estadisticas/pafesAPI', [EstadisticasController::class, 'pafesAPI']);
+$router->get('/estadisticas/arrestosAPI', [EstadisticasController::class, 'arrestosAPI']);
+
+
 
 $router->comprobarRutas();

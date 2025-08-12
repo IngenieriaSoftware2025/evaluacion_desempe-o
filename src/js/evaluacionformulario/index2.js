@@ -1,101 +1,107 @@
+import { Dropdown } from "bootstrap";
+import { validarFormulario } from "../funciones";
 import Swal from "sweetalert2";
 
 // ELEMENTOS DEL DOM
-const FormConceptualizacion = document.getElementById('FormConceptualizacion');
-const BtnVolverPaginaAnterior = document.getElementById('BtnVolverPaginaAnterior');
-const BtnCalcularTotal = document.getElementById('BtnCalcularTotal');
-const BtnContinuar = document.getElementById('BtnContinuar');
+const FormConceptualizacion = document.getElementById("FormConceptualizacion");
+const BtnVolverPaginaAnterior = document.getElementById(
+  "BtnVolverPaginaAnterior"
+);
+const BtnCalcularTotal = document.getElementById("BtnCalcularTotal");
+const BtnContinuar = document.getElementById("BtnContinuar");
 
 // Contenedores
-const preguntasContainer = document.getElementById('preguntas-container');
-const loadingPreguntas = document.getElementById('loading_preguntas');
-const errorPreguntas = document.getElementById('error_preguntas');
-const mensajeErrorPreguntas = document.getElementById('mensaje_error_preguntas');
+const preguntasContainer = document.getElementById("preguntas-container");
+const loadingPreguntas = document.getElementById("loading_preguntas");
+const errorPreguntas = document.getElementById("error_preguntas");
+const mensajeErrorPreguntas = document.getElementById(
+  "mensaje_error_preguntas"
+);
 
 // Campos ocultos y totales
-const catalogoEvaluado = document.getElementById('catalogo_evaluado');
-const proyeccionSerie = document.getElementById('proyeccion_serie');
-const bolTotalConcep = document.getElementById('bol_total_concep');
-const tipoDescripcion = document.getElementById('tipo_descripcion');
-const subtotalConceptualizacion = document.getElementById('subtotal_conceptualizacion');
-const totalConceptualizacion = document.getElementById('total_conceptualizacion');
+const catalogoEvaluado = document.getElementById("catalogo_evaluado");
+const proyeccionSerie = document.getElementById("proyeccion_serie");
+const bolTotalConcep = document.getElementById("bol_total_concep");
+const tipoDescripcion = document.getElementById("tipo_descripcion");
+const subtotalConceptualizacion = document.getElementById(
+  "subtotal_conceptualizacion"
+);
+const totalConceptualizacion = document.getElementById(
+  "total_conceptualizacion"
+);
 
 // Variables globales
 let preguntasData = [];
 let respuestasActuales = {};
 
 // ELEMENTOS DEL DOM PARA SECCIONES VI, VII Y VIII
-const accionMotivadora = document.getElementById('accion_motivadora');
-const accionCorrectiva = document.getElementById('accion_correctiva');
-const observaciones = document.getElementById('observaciones');
-const bolAccionMot = document.getElementById('bol_accion_mot');
-const bolAccionCorrec = document.getElementById('bol_accion_correc');
-const bolObs = document.getElementById('bol_obs');
+const accionMotivadora = document.getElementById("accion_motivadora");
+const accionCorrectiva = document.getElementById("accion_correctiva");
+const observaciones = document.getElementById("observaciones");
+const bolAccionMot = document.getElementById("bol_accion_mot");
+const bolAccionCorrec = document.getElementById("bol_accion_correc");
+const bolObs = document.getElementById("bol_obs");
 
 // FUNCIÓN PARA OBTENER EL CATÁLOGO DE LA URL
 const obtenerCatalogoDeURL = () => {
-    const urlParams = new URLSearchParams(location.search);
-    return urlParams.get('catalogo');
-}
+  const urlParams = new URLSearchParams(location.search);
+  return urlParams.get("catalogo");
+};
 
 // CARGAR PREGUNTAS DE CONCEPTUALIZACIÓN
 const CargarPreguntasConceptualizacion = async () => {
-    const catalogo = obtenerCatalogoDeURL();
-    
-    if (!catalogo) {
-        mostrarError('No se especificó el catálogo del evaluado en la URL');
-        return;
+  const catalogo = obtenerCatalogoDeURL();
+
+  mostrarErrorSinCatalogo();
+
+  // Mostrar loading
+  mostrarLoading();
+  ocultarError();
+
+  const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerPreguntasConceptualizacion?catalogo=${catalogo}`;
+  const config = { method: "GET" };
+
+  try {
+    const respuesta = await fetch(url, config);
+    const datos = await respuesta.json();
+    const { codigo, mensaje, data } = datos;
+
+    if (codigo === 1) {
+      // Guardar datos
+      preguntasData = data.preguntas;
+      catalogoEvaluado.value = catalogo;
+      proyeccionSerie.value = data.proyeccion;
+      tipoDescripcion.textContent = data.tipo_descripcion;
+
+      // Renderizar preguntas
+      renderizarPreguntas();
+      ocultarLoading();
+
+
+    } else {
+      mostrarErrorGeneral();
+      ocultarLoading();
     }
-
-    // Mostrar loading
-    mostrarLoading(true);
-    ocultarError();
-
-    const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerPreguntasConceptualizacion?catalogo=${catalogo}`;
-    const config = { method: 'GET' }
-
-    try {
-        const respuesta = await fetch(url, config);
-        const datos = await respuesta.json();
-        const { codigo, mensaje, data } = datos;
-
-        if (codigo === 1) {
-            // Guardar datos
-            preguntasData = data.preguntas;
-            catalogoEvaluado.value = catalogo;
-            proyeccionSerie.value = data.proyeccion;
-            tipoDescripcion.textContent = data.tipo_descripcion;
-
-            // Renderizar preguntas
-            renderizarPreguntas();
-            mostrarLoading(false);
-
-            console.log('Preguntas cargadas:', data);
-        } else {
-            mostrarError(mensaje || 'Error al cargar las preguntas');
-            mostrarLoading(false);
-        }
-
-    } catch (error) {
-        console.log(error);
-        mostrarError('Error de conexión al cargar las preguntas');
-        mostrarLoading(false);
-    }
-}
+  } catch (error) {
+    console.log(error);
+    mostrarErrorConexion();
+    ocultarLoading();
+  }
+};
 
 // RENDERIZAR LAS PREGUNTAS DINÁMICAMENTE
 const renderizarPreguntas = () => {
-    if (!preguntasData || preguntasData.length === 0) {
-        mostrarError('No se encontraron preguntas para esta serie');
-        return;
-    }
+  if (!preguntasData || preguntasData.length === 0) {
+    mostrarErrorSinPreguntas();
+    return;
+  }
 
-    let htmlPreguntas = '';
+  let htmlPreguntas = "";
 
-    preguntasData.forEach((pregunta, index) => {
-        const numeroPregunta = index + 1;
-        
-        htmlPreguntas += `
+  preguntasData.forEach((pregunta, index) => {
+    const numeroPregunta = index + 1;
+
+    htmlPreguntas += `
             <div class="pregunta-item" data-pregunta="${pregunta.pre_codigo}">
                 <div class="row align-items-center">
                     <div class="col-md-8">
@@ -156,276 +162,307 @@ const renderizarPreguntas = () => {
                 </div>
             </div>
         `;
-    });
+  });
 
-    // Agregar barra de progreso
-    htmlPreguntas = `
+  // Agregar barra de progreso
+  htmlPreguntas = `
         <div class="progreso-conceptualizacion mb-4">
             <div class="progreso-barra" id="progreso-barra"></div>
         </div>
         ${htmlPreguntas}
     `;
 
-    preguntasContainer.innerHTML = htmlPreguntas;
+  preguntasContainer.innerHTML = htmlPreguntas;
 
-    // Agregar event listeners a los radio buttons
-    const radiosConceptualizacion = document.querySelectorAll('.radio-conceptualizacion');
-    radiosConceptualizacion.forEach(radio => {
-        radio.addEventListener('change', manejarCambioRespuesta);
-    });
+  // Agregar event listeners a los radio buttons
+  const radiosConceptualizacion = document.querySelectorAll(
+    ".radio-conceptualizacion"
+  );
+  radiosConceptualizacion.forEach((radio) => {
+    radio.addEventListener("change", manejarCambioRespuesta);
+  });
 
-    // Calcular total inicial
-    calcularTotalConceptualizacion();
-
-}
+  // Calcular total inicial
+  calcularTotalConceptualizacion();
+};
 
 // MANEJAR CAMBIO EN LAS RESPUESTAS
 const manejarCambioRespuesta = (event) => {
-    const radio = event.target;
-    const preguntaCodigo = radio.dataset.preguntaCodigo;
-    const valor = parseInt(radio.value);
+  const radio = event.target;
+  const preguntaCodigo = radio.dataset.preguntaCodigo;
+  const valor = parseInt(radio.value);
 
-    // Guardar respuesta
-    respuestasActuales[preguntaCodigo] = valor;
+  // Guardar respuesta
+  respuestasActuales[preguntaCodigo] = valor;
 
-    // Marcar pregunta como completada
-    const preguntaItem = radio.closest('.pregunta-item');
-    preguntaItem.classList.add('completada');
+  // Marcar pregunta como completada
+  const preguntaItem = radio.closest(".pregunta-item");
+  preguntaItem.classList.add("completada");
 
-    // Actualizar progreso
-    actualizarProgreso();
+  // Actualizar progreso
+  actualizarProgreso();
 
-    // Recalcular total
-    calcularTotalConceptualizacion();
-}
+  // Recalcular total
+  calcularTotalConceptualizacion();
+};
 
 // ACTUALIZAR PROGRESO VISUAL
 const actualizarProgreso = () => {
-    const totalPreguntas = preguntasData.length;
-    const preguntasRespondidas = Object.keys(respuestasActuales).length;
-    const porcentaje = (preguntasRespondidas / totalPreguntas) * 100;
+  const totalPreguntas = preguntasData.length;
+  const preguntasRespondidas = Object.keys(respuestasActuales).length;
+  const porcentaje = (preguntasRespondidas / totalPreguntas) * 100;
 
-    const progresoBarra = document.getElementById('progreso-barra');
-    if (progresoBarra) {
-        progresoBarra.style.width = `${porcentaje}%`;
-    }
-}
+  const progresoBarra = document.getElementById("progreso-barra");
+  if (progresoBarra) {
+    progresoBarra.style.width = `${porcentaje}%`;
+  }
+};
 
 // CALCULAR TOTAL DE CONCEPTUALIZACIÓN
 const calcularTotalConceptualizacion = () => {
-    let subtotal = 0;
+  let subtotal = 0;
 
-    // Sumar todas las respuestas
-    Object.values(respuestasActuales).forEach(valor => {
-        subtotal += valor;
-    });
+  // Sumar todas las respuestas
+  Object.values(respuestasActuales).forEach((valor) => {
+    subtotal += valor;
+  });
 
-    // El total es igual al subtotal en esta sección
-    const total = subtotal;
+  // El total es igual al subtotal en esta sección
+  const total = subtotal;
 
-    // Actualizar displays
-    if (subtotalConceptualizacion) subtotalConceptualizacion.textContent = subtotal;
-    if (totalConceptualizacion) totalConceptualizacion.textContent = total;
-    if (bolTotalConcep) bolTotalConcep.value = total;
+  // Actualizar displays
+  if (subtotalConceptualizacion)
+    subtotalConceptualizacion.textContent = subtotal;
+  if (totalConceptualizacion) totalConceptualizacion.textContent = total;
+  if (bolTotalConcep) bolTotalConcep.value = total;
 
-    // Leer total de Salud y Conducta desde sessionStorage
-    const totalSaludConducta = parseInt(sessionStorage.getItem('totalSaludConducta')) || 0;
-    const totalGeneral = totalSaludConducta + total;
+  // Leer total de Salud y Conducta desde sessionStorage
+  const totalSaludConducta =
+    parseInt(sessionStorage.getItem("totalSaludConducta")) || 0;
+  const totalGeneral = totalSaludConducta + total;
 
-    console.log('Total Salud y Conducta (desde sesión):', totalSaludConducta);
-    console.log('Total Conceptualización:', total);
-    console.log('TOTAL GENERAL:', totalGeneral);
-    // Actualizar Sección V - Categoría
-    actualizarSeccionCategoria(totalSaludConducta, total, totalGeneral);
-}
-
-// VALIDAR FORMULARIO COMPLETO
-const validarFormularioCompleto = () => {
-    const totalPreguntas = preguntasData.length;
-    const preguntasRespondidas = Object.keys(respuestasActuales).length;
-
-    if (preguntasRespondidas < totalPreguntas) {
-        const faltantes = totalPreguntas - preguntasRespondidas;
-        Swal.fire({
-            position: "center",
-            icon: "warning",
-            title: "Formulario Incompleto",
-            text: `Faltan ${faltantes} preguntas por responder`,
-            showConfirmButton: true,
-        });
-        return false;
-    }
-
-    return true;
-}
+  // Actualizar Sección V - Categoría
+  actualizarSeccionCategoria(totalSaludConducta, total, totalGeneral);
+};
 
 // MOSTRAR/OCULTAR ESTADOS
-const mostrarLoading = (mostrar) => {
-    if (loadingPreguntas) {
-        loadingPreguntas.style.display = mostrar ? 'block' : 'none';
-    }
-}
+const mostrarLoading = () => {
+  loadingPreguntas.style.display = "block";
+};
 
-const mostrarError = (mensaje) => {
-    if (errorPreguntas && mensajeErrorPreguntas) {
-        mensajeErrorPreguntas.textContent = mensaje;
-        errorPreguntas.classList.remove('d-none');
-    }
-}
+const ocultarLoading = () => {
+  loadingPreguntas.style.display = "none";
+};
+
+const mostrarErrorSinCatalogo = () => {
+  mensajeErrorPreguntas.textContent =
+    "No se especificó el catálogo del evaluado en la URL";
+  errorPreguntas.classList.remove("d-none");
+};
+
+const mostrarErrorConexion = () => {
+  mensajeErrorPreguntas.textContent =
+    "Error de conexión al cargar las preguntas";
+  errorPreguntas.classList.remove("d-none");
+};
+
+const mostrarErrorSinPreguntas = () => {
+  mensajeErrorPreguntas.textContent =
+    "No se encontraron preguntas para esta serie";
+  errorPreguntas.classList.remove("d-none");
+};
+
+const mostrarErrorGeneral = () => {
+  mensajeErrorPreguntas.textContent = "Error al cargar las preguntas";
+  errorPreguntas.classList.remove("d-none");
+};
 
 const ocultarError = () => {
-    if (errorPreguntas) {
-        errorPreguntas.classList.add('d-none');
-    }
-}
+  errorPreguntas.classList.add("d-none");
+};
 
 // NAVEGACIÓN
 const VolverPaginaAnterior = () => {
-    const catalogo = obtenerCatalogoDeURL();
-    if (catalogo) {
-        location.href = `/evaluacion_desempeno/ingresar-datos?catalogo=${catalogo}`;
-    } else {
-        location.href = `/evaluacion_desempeno/evaluacionespecialistas`;
-    }
-}
+  const catalogo = obtenerCatalogoDeURL();
+  if (catalogo) {
+    location.href = `/evaluacion_desempeno/ingresar-datos?catalogo=${catalogo}`;
+  } else {
+    location.href = `/evaluacion_desempeno/evaluacionespecialistas`;
+  }
+};
 
 const ContinuarSiguientePagina = () => {
-    if (validarFormularioCompleto()) {
-        Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Sección Completada",
-            text: `Total de conceptualización: ${totalConceptualizacion.textContent} puntos`,
-            showConfirmButton: true,
-        }).then(() => {
-            // Aquí continuaría a la siguiente sección
-            console.log('Continuar a siguiente página...');
-        });
-    }
-}
+  if (
+    validarFormulario(FormConceptualizacion, [
+      "accion_motivadora",
+      "accion_correctiva",
+      "observaciones",
+    ])
+  ) {
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Sección Completada",
+      text: `Total de conceptualización: ${totalConceptualizacion.textContent} puntos`,
+      showConfirmButton: true,
+    }).then(() => {
+
+    });
+  }
+};
 
 // CALCULAR TOTAL MANUAL (botón)
 const calcularTotalManual = () => {
-    calcularTotalConceptualizacion();
-    
-    const total = parseInt(totalConceptualizacion.textContent);
-    const totalPreguntas = preguntasData.length;
-    const maxPuntos = totalPreguntas * 5;
-    const porcentaje = ((total / maxPuntos) * 100).toFixed(1);
+  calcularTotalConceptualizacion();
 
-    Swal.fire({
-        position: "center",
-        icon: "info",
-        title: "Total Actualizado",
-        html: `
+  const total = parseInt(totalConceptualizacion.textContent);
+  const totalPreguntas = preguntasData.length;
+  const maxPuntos = totalPreguntas * 5;
+  const porcentaje = ((total / maxPuntos) * 100).toFixed(1);
+
+  Swal.fire({
+    position: "center",
+    icon: "info",
+    title: "Total Actualizado",
+    html: `
             <strong>Subtotal:</strong> ${subtotalConceptualizacion.textContent} puntos<br>
             <strong>Total:</strong> ${total} puntos<br>
             <strong>Porcentaje:</strong> ${porcentaje}%<br>
             <small>Máximo posible: ${maxPuntos} puntos</small>
         `,
-        showConfirmButton: true,
-    });
-}
+    showConfirmButton: true,
+  });
+};
 
 // CARGAR ACCIONES MOTIVADORAS
 const cargarAccionesMotivadoras = async () => {
-    try {
-        const url = '/evaluacion_desempeno/API/evaluacionformulario/obtenerAccionesMotivadoras';
-        const respuesta = await fetch(url, { method: 'GET' });
-        const datos = await respuesta.json();
+  try {
+    const url =
+      "/evaluacion_desempeno/API/evaluacionformulario/obtenerAccionesMotivadoras";
+    const respuesta = await fetch(url, { method: "GET" });
+    const datos = await respuesta.json();
 
-        if (datos.codigo === 1 && datos.data.length > 0) {
-            // Limpiar select
-            accionMotivadora.innerHTML = '<option value="">-- Seleccione una acción motivadora --</option>';
-            
-            // Agregar opciones
-            datos.data.forEach(accion => {
-                const option = document.createElement('option');
-                option.value = accion.mot_codigo;
-                option.textContent = accion.mot_descripcion;
-                accionMotivadora.appendChild(option);
-            });
-        } else {
-            console.log('No se encontraron acciones motivadoras');
-        }
-    } catch (error) {
-        console.error('Error al cargar acciones motivadoras:', error);
+    if (datos.codigo === 1 && datos.data.length > 0) {
+      // Limpiar select
+      accionMotivadora.innerHTML =
+        '<option value="">Seleccione una acción motivadora</option>';
+
+      // Agregar opciones
+      datos.data.forEach((accion) => {
+        const option = document.createElement("option");
+        option.value = accion.mot_codigo;
+        option.textContent = accion.mot_descripcion;
+        accionMotivadora.appendChild(option);
+      });
+    } else {
+      console.log("No se encontraron acciones motivadoras");
     }
+  } catch (error) {
+    console.error("Error al cargar acciones motivadoras:", error);
+  }
 };
 
 // CARGAR ACCIONES CORRECTIVAS
 const cargarAccionesCorrectivas = async () => {
-    try {
-        const url = '/evaluacion_desempeno/API/evaluacionformulario/obtenerAccionesCorrectivas';
-        const respuesta = await fetch(url, { method: 'GET' });
-        const datos = await respuesta.json();
+  try {
+    const url =
+      "/evaluacion_desempeno/API/evaluacionformulario/obtenerAccionesCorrectivas";
+    const respuesta = await fetch(url, { method: "GET" });
+    const datos = await respuesta.json();
 
-        if (datos.codigo === 1 && datos.data.length > 0) {
-            // Limpiar select
-            accionCorrectiva.innerHTML = '<option value="">-- Seleccione una acción correctiva --</option>';
-            
-            // Agregar opciones
-            datos.data.forEach(accion => {
-                const option = document.createElement('option');
-                option.value = accion.corr_codigo;
-                option.textContent = accion.corr_descripcion;
-                accionCorrectiva.appendChild(option);
-            });
-        } else {
-            console.log('No se encontraron acciones correctivas');
-        }
-    } catch (error) {
-        console.error('Error al cargar acciones correctivas:', error);
+    if (datos.codigo === 1 && datos.data.length > 0) {
+      // Limpiar select
+      accionCorrectiva.innerHTML =
+        '<option value="">-- Seleccione una acción correctiva --</option>';
+
+      // Agregar opciones
+      datos.data.forEach((accion) => {
+        const option = document.createElement("option");
+        option.value = accion.corr_codigo;
+        option.textContent = accion.corr_descripcion;
+        accionCorrectiva.appendChild(option);
+      });
+    } else {
+      console.log("No se encontraron acciones correctivas");
     }
+  } catch (error) {
+    console.error("Error al cargar acciones correctivas:", error);
+  }
 };
 
 // FUNCIÓN PARA ACTUALIZAR SECCIÓN V - CATEGORÍA
-const actualizarSeccionCategoria = (totalSalud, totalConceptualizacion, totalFinal) => {
-    // Actualizar displays
-    const elemSalud = document.getElementById('mostrar_total_salud');
-    const elemConceptualizacion = document.getElementById('mostrar_total_conceptualizacion');
-    const elemTotalFinal = document.getElementById('mostrar_total_final');
-    const elemCategoria = document.getElementById('badge_categoria');
-    const elemTotalHidden = document.getElementById('total_final_evaluacion');
-    
-    if (elemSalud) elemSalud.textContent = totalSalud;
-    if (elemConceptualizacion) elemConceptualizacion.textContent = totalConceptualizacion;
-    if (elemTotalFinal) elemTotalFinal.textContent = totalFinal;
-    if (elemTotalHidden) elemTotalHidden.value = totalFinal;
-    
-    // Calcular categoría según rangos
-    let categoria = '';
-    let claseCSS = '';
-    
-    if (totalFinal >= 85) {
-        categoria = 'EXCELENTE';
-        claseCSS = 'bg-success';
-    } else if (totalFinal >= 70) {
-        categoria = 'MUY BUENO';
-        claseCSS = 'bg-primary';
-    } else if (totalFinal >= 55) {
-        categoria = 'REGULAR';
-        claseCSS = 'bg-warning';
-    } else {
-        categoria = 'INSATISFACTORIO';
-        claseCSS = 'bg-danger';
-    }
-    
-    if (elemCategoria) {
-        elemCategoria.textContent = categoria;
-        elemCategoria.className = `badge badge-categoria ${claseCSS} text-white`;
-    }
-    
-    console.log(`Categoría asignada: ${categoria} (${totalFinal}/100 puntos)`);
-}
+const actualizarSeccionCategoria = (
+  totalSalud,
+  totalConceptualizacion,
+  totalFinal
+) => {
+  // Actualizar displays
+  const elemSalud = document.getElementById("mostrar_total_salud");
+  const elemConceptualizacion = document.getElementById(
+    "mostrar_total_conceptualizacion"
+  );
+  const elemTotalFinal = document.getElementById("mostrar_total_final");
+  const elemCategoria = document.getElementById("badge_categoria");
+  const elemTotalHidden = document.getElementById("total_final_evaluacion");
 
-// EVENT LISTENERS PARA NUEVAS SECCIONES
-accionMotivadora.addEventListener('change', (e) => { bolAccionMot.value = e.target.value || ''; });
-accionCorrectiva.addEventListener('change', (e) => { bolAccionCorrec.value = e.target.value || ''; });
-observaciones.addEventListener('input', (e) => { bolObs.value = e.target.value || ''; });
-BtnVolverPaginaAnterior.addEventListener('click', VolverPaginaAnterior);
-BtnCalcularTotal.addEventListener('click', calcularTotalManual);
-BtnContinuar.addEventListener('click', ContinuarSiguientePagina);
+  if (elemSalud) elemSalud.textContent = totalSalud;
+  if (elemConceptualizacion)
+    elemConceptualizacion.textContent = totalConceptualizacion;
+  if (elemTotalFinal) elemTotalFinal.textContent = totalFinal;
+  if (elemTotalHidden) elemTotalHidden.value = totalFinal;
+
+  // Calcular categoría según rangos
+  let categoria = "";
+  let claseCSS = "";
+
+  if (totalFinal >= 85) {
+    categoria = "EXCELENTE";
+    claseCSS = "bg-success";
+  } else if (totalFinal >= 70) {
+    categoria = "MUY BUENO";
+    claseCSS = "bg-primary";
+  } else if (totalFinal >= 55) {
+    categoria = "REGULAR";
+    claseCSS = "bg-warning";
+  } else {
+    categoria = "INSATISFACTORIO";
+    claseCSS = "bg-danger";
+  }
+
+  if (elemCategoria) {
+    elemCategoria.textContent = categoria;
+    elemCategoria.className = `badge badge-categoria ${claseCSS} text-white`;
+  }
+
+};
+
+// FUNCIONES PARA FORMULARIOS
+const manejarAccionMotivadora = () => {
+    bolAccionMot.value = accionMotivadora.value || '';
+};
+
+const manejarAccionCorrectiva = () => {
+    bolAccionCorrec.value = accionCorrectiva.value || '';
+};
+
+const manejarObservaciones = () => {
+    bolObs.value = observaciones.value || '';
+};
+
+
+
+// INICIALIZACIÓN
 CargarPreguntasConceptualizacion();
 cargarAccionesMotivadoras();
 cargarAccionesCorrectivas();
+
+// EVENT LISTENERS
+accionMotivadora.addEventListener('change', manejarAccionMotivadora);
+accionCorrectiva.addEventListener('change', manejarAccionCorrectiva);
+observaciones.addEventListener('input', manejarObservaciones);
+BtnVolverPaginaAnterior.addEventListener('click', VolverPaginaAnterior);
+BtnCalcularTotal.addEventListener('click', calcularTotalManual);
+BtnContinuar.addEventListener('click', ContinuarSiguientePagina);
+
+
+

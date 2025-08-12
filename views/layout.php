@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="build/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="shortcut icon" href="<?= asset('images/cit.png') ?>" type="image/x-icon">
     <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
     <title>proyecto</title>
@@ -25,6 +26,10 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="margin: 0;">
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="/evaluacion_desempeno/evaluacionespecialistas"><i class="bi bi-house-fill me-2"></i>Evaluaciones</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/evaluacion_desempeno/estadisticas"><i class="bi bi-bar-chart me-2"></i>Estadísticas</a>
                     </li>
   
                     <div class="nav-item dropdown " >

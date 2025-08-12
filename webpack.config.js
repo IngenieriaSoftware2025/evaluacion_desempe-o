@@ -11,7 +11,8 @@ module.exports = {
     'css/evaluacionformulario/style' : './src/css/evaluacionformulario/style.css',
     'css/evaluacionespecialistas/style' : './src/css/evaluacionespecialistas/style.css',
     'js/evaluacionformulario/index2' : './src/js/evaluacionformulario/index2.js',
-    'css/evaluacionformulario/index2' : './src/css/evaluacionformulario/index2.css'
+    'css/evaluacionformulario/index2' : './src/css/evaluacionformulario/index2.css',
+    'js/estadisticas/index' : './src/js/estadisticas/index.js'
   },
   output: {
     filename: '[name].js',

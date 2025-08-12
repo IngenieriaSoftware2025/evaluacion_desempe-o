@@ -214,7 +214,7 @@
                             <textarea class="form-control modern-input" id="observaciones" name="observaciones" rows="4"
                                 placeholder="Ingrese las observaciones pertinentes sobre la evaluación del especialista..."
                                 maxlength="500"></textarea>
-                          
+
                             <input type="hidden" id="bol_obs" name="bol_obs" value="">
                         </div>
                     </div>

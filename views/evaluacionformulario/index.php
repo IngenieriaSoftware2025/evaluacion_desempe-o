@@ -85,7 +85,7 @@
                     <form id="FormEvaluacion">
                         <!-- Campos ocultos -->
                         <input type="hidden" id="bol_cat_evaluado" name="bol_cat_evaluado">
-                       <input type="hidden" id="bol_anio" name="bol_anio">
+                        <input type="hidden" id="bol_anio" name="bol_anio">
                         <input type="hidden" id="bol_ceom" name="bol_ceom">
 
                         <div class="row mb-3">
@@ -138,7 +138,7 @@
                                 <label class="form-label">
                                     <i class="bi bi-calendar-check me-1"></i>Año de la Evaluación
                                 </label>
-                               <input type="text" class="form-control modern-input" id="anio_evaluacion" readonly>
+                                <input type="text" class="form-control modern-input" id="anio_evaluacion" readonly>
                             </div>
                         </div>
 
@@ -168,7 +168,7 @@
                     <h4 class="mb-0 header-title">III. FACTORES DE SALUD Y CONDUCTA</h4>
                 </div>
                 <div class="card-body form-section">
-                    
+
                     <!-- A. Perfil Biofísico -->
                     <div class="subsection mb-4">
                         <div class="subsection-header mb-3">
@@ -225,11 +225,21 @@
                                     <div class="points-container">
                                         <h6 class="points-header"><i class="bi bi-award me-2"></i>Puntos</h6>
                                         <div class="points-list">
-                                            <div class="point-item" data-value="1"><div class="point-box">1</div></div>
-                                            <div class="point-item" data-value="2"><div class="point-box">2</div></div>
-                                            <div class="point-item" data-value="3"><div class="point-box">3</div></div>
-                                            <div class="point-item" data-value="4"><div class="point-box">4</div></div>
-                                            <div class="point-item" data-value="5"><div class="point-box">5</div></div>
+                                            <div class="point-item" data-value="1">
+                                                <div class="point-box">1</div>
+                                            </div>
+                                            <div class="point-item" data-value="2">
+                                                <div class="point-box">2</div>
+                                            </div>
+                                            <div class="point-item" data-value="3">
+                                                <div class="point-box">3</div>
+                                            </div>
+                                            <div class="point-item" data-value="4">
+                                                <div class="point-box">4</div>
+                                            </div>
+                                            <div class="point-item" data-value="5">
+                                                <div class="point-box">5</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -329,11 +339,21 @@
                                     <div class="points-container">
                                         <h6 class="points-header"><i class="bi bi-award me-2"></i>Puntos</h6>
                                         <div class="points-list">
-                                            <div class="point-item" data-value="0"><div class="point-box">0</div></div>
-                                            <div class="point-item" data-value="2"><div class="point-box">2</div></div>
-                                            <div class="point-item" data-value="3"><div class="point-box">3</div></div>
-                                            <div class="point-item" data-value="4"><div class="point-box">4</div></div>
-                                            <div class="point-item" data-value="5"><div class="point-box">5</div></div>
+                                            <div class="point-item" data-value="0">
+                                                <div class="point-box">0</div>
+                                            </div>
+                                            <div class="point-item" data-value="2">
+                                                <div class="point-box">2</div>
+                                            </div>
+                                            <div class="point-item" data-value="3">
+                                                <div class="point-box">3</div>
+                                            </div>
+                                            <div class="point-item" data-value="4">
+                                                <div class="point-box">4</div>
+                                            </div>
+                                            <div class="point-item" data-value="5">
+                                                <div class="point-box">5</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -399,12 +419,24 @@
                                     <div class="points-container">
                                         <h6 class="points-header"><i class="bi bi-award me-2"></i>Puntos</h6>
                                         <div class="points-list">
-                                            <div class="point-item punto-demeritos-item" data-value="5"><div class="point-box punto-demeritos-box">5</div></div>
-                                            <div class="point-item punto-demeritos-item" data-value="4"><div class="point-box punto-demeritos-box">4</div></div>
-                                            <div class="point-item punto-demeritos-item" data-value="3"><div class="point-box punto-demeritos-box">3</div></div>
-                                            <div class="point-item punto-demeritos-item" data-value="2"><div class="point-box punto-demeritos-box">2</div></div>
-                                            <div class="point-item punto-demeritos-item" data-value="1"><div class="point-box punto-demeritos-box">1</div></div>
-                                            <div class="point-item punto-demeritos-item" data-value="0"><div class="point-box punto-demeritos-box">0</div></div>
+                                            <div class="point-item punto-demeritos-item" data-value="5">
+                                                <div class="point-box punto-demeritos-box">5</div>
+                                            </div>
+                                            <div class="point-item punto-demeritos-item" data-value="4">
+                                                <div class="point-box punto-demeritos-box">4</div>
+                                            </div>
+                                            <div class="point-item punto-demeritos-item" data-value="3">
+                                                <div class="point-box punto-demeritos-box">3</div>
+                                            </div>
+                                            <div class="point-item punto-demeritos-item" data-value="2">
+                                                <div class="point-box punto-demeritos-box">2</div>
+                                            </div>
+                                            <div class="point-item punto-demeritos-item" data-value="1">
+                                                <div class="point-box punto-demeritos-box">1</div>
+                                            </div>
+                                            <div class="point-item punto-demeritos-item" data-value="0">
+                                                <div class="point-box punto-demeritos-box">0</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -465,11 +497,21 @@
                                     <div class="points-container">
                                         <h6 class="points-header"><i class="bi bi-award me-2"></i>Puntos</h6>
                                         <div class="points-list">
-                                            <div class="point-item punto-arrestos-item" data-value="5"><div class="point-box punto-arrestos-box">5</div></div>
-                                            <div class="point-item punto-arrestos-item" data-value="4"><div class="point-box punto-arrestos-box">4</div></div>
-                                            <div class="point-item punto-arrestos-item" data-value="3"><div class="point-box punto-arrestos-box">3</div></div>
-                                            <div class="point-item punto-arrestos-item" data-value="2"><div class="point-box punto-arrestos-box">2</div></div>
-                                            <div class="point-item punto-arrestos-item" data-value="1"><div class="point-box punto-arrestos-box">1</div></div>
+                                            <div class="point-item punto-arrestos-item" data-value="5">
+                                                <div class="point-box punto-arrestos-box">5</div>
+                                            </div>
+                                            <div class="point-item punto-arrestos-item" data-value="4">
+                                                <div class="point-box punto-arrestos-box">4</div>
+                                            </div>
+                                            <div class="point-item punto-arrestos-item" data-value="3">
+                                                <div class="point-box punto-arrestos-box">3</div>
+                                            </div>
+                                            <div class="point-item punto-arrestos-item" data-value="2">
+                                                <div class="point-box punto-arrestos-box">2</div>
+                                            </div>
+                                            <div class="point-item punto-arrestos-item" data-value="1">
+                                                <div class="point-box punto-arrestos-box">1</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -506,7 +548,7 @@
                                 <div class="col-md-8">
                                     <div class="form-group mb-4">
                                         <label for="merito_1" class="form-label">
-                                            <i class="bi bi-star-fill me-2"></i>Mérito 1 (3 puntos)
+                                            <i class="bi bi-star-fill me-2"></i>3 puntos
                                         </label>
                                         <select class="form-control" id="merito_1" name="merito_3" data-nota="3">
                                             <option value="0">Cargando méritos...</option>
@@ -514,7 +556,7 @@
                                     </div>
                                     <div class="form-group mb-4">
                                         <label for="merito_2" class="form-label">
-                                            <i class="bi bi-star me-2"></i>Mérito 2 (2 puntos)
+                                            <i class="bi bi-star me-2"></i>2 puntos
                                         </label>
                                         <select class="form-control" id="merito_2" name="merito_2" data-nota="2">
                                             <option value="0">Cargando méritos...</option>
@@ -538,7 +580,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="status-indicator mt-4">
                                 <div class="alert alert-info" id="resumen_meritos">
                                     <i class="bi bi-info-circle me-2"></i>
@@ -561,7 +603,7 @@
                                 SUMATORIA SECCIÓN III - FACTORES DE SALUD Y CONDUCTA
                             </h4>
                             <p class="sumatoria-subtitle">
-                                Sume los puntos que aparecen a la derecha de la categoría, rango y mérito que seleccione, 
+                                Sume los puntos que aparecen a la derecha de la categoría, rango y mérito que seleccione,
                                 para obtener el total del apartado III (FACTORES DE SALUD Y CONDUCTA).
                             </p>
                         </div>

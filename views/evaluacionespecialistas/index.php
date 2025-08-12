@@ -9,11 +9,11 @@
                     <div class="evaluation-icon">
                         <i class="bi bi-clipboard-check"></i>
                     </div>
-                    
+
                     <!-- TÍTULO PRINCIPAL -->
                     <h4 class="mb-0 header-title">EVALUACIÓN DEL DESEMPEÑO PARA ESPECIALISTAS</h4>
                 </div>
-                
+
                 <!-- FORMULARIO DE BÚSQUEDA -->
                 <div class="card-body form-section">
                     <form id="FormBusqueda" enctype="multipart/form-data">
@@ -23,10 +23,10 @@
                                 <label for="catalogo" class="form-label">
                                     <i class="bi bi-person-badge me-1"></i>Catálogo
                                 </label>
-                                <input type="text" class="form-control modern-input" id="catalogo" name="catalogo" 
-                                       placeholder="Ingrese catálogo">
+                                <input type="text" class="form-control modern-input" id="catalogo" name="catalogo"
+                                    placeholder="Ingrese catálogo">
                             </div>
-                            
+
                             <!-- SELECT DE GRADO -->
                             <div class="col-md-6 mb-3">
                                 <label for="grado" class="form-label">
@@ -37,7 +37,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <!-- BOTONES DE ACCIÓN -->
                         <div class="text-center button-section">
                             <button class="btn btn-primary btn-modern me-3" type="button" id="BtnBuscar">
@@ -63,7 +63,7 @@
                         <h4 class="mb-0">Especialistas Activos para Evaluación</h4>
                     </div>
                 </div>
-                
+
                 <!-- TABLA DE DATOS -->
                 <div class="card-body table-section">
                     <div class="table-responsive">

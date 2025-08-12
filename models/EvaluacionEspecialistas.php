@@ -1,13 +1,15 @@
 <?php
 
 namespace Model;
+
 use Model\ActiveRecord;
 
-class EvaluacionEspecialistas extends ActiveRecord {
-    
+class EvaluacionEspecialistas extends ActiveRecord
+{
+
     public static $tabla = 'eva_datos';
     public static $idTabla = 'dat_cat_evaluado';
-    public static $columnasDB = 
+    public static $columnasDB =
     [
         'dat_cat_evaluado',
         'dat_anio',
@@ -21,7 +23,7 @@ class EvaluacionEspecialistas extends ActiveRecord {
         'dat_tiempo_eva',
         'dat_situacion'
     ];
-    
+
     public $dat_cat_evaluado;
     public $dat_anio;
     public $dat_grado;
@@ -33,7 +35,7 @@ class EvaluacionEspecialistas extends ActiveRecord {
     public $dat_puesto_eva;
     public $dat_tiempo_eva;
     public $dat_situacion;
-    
+
     public function __construct($evaluacion = [])
     {
         $this->dat_cat_evaluado = $evaluacion['dat_cat_evaluado'] ?? null;
@@ -48,9 +50,5 @@ class EvaluacionEspecialistas extends ActiveRecord {
         $this->dat_tiempo_eva = $evaluacion['dat_tiempo_eva'] ?? null;
         $this->dat_situacion = $evaluacion['dat_situacion'] ?? 1;
     }
-    
-    public static function EliminarEvaluacion($catalogo){
-        $sql = "UPDATE eva_datos SET dat_situacion = 0 WHERE dat_cat_evaluado = $catalogo";
-        return self::SQL($sql);
-    }
+
 }

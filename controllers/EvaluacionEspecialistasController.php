@@ -25,7 +25,7 @@ class EvaluacionEspecialistasController extends ActiveRecord
             // CONDICIONES BASE PARA ESPECIALISTAS ACTIVOS
             $condiciones = [
                 "org_dependencia = 10030",
-                "gra_clase = 4", 
+                "gra_clase = 4",
                 "per_situacion in (11)"
             ];
 
@@ -74,7 +74,6 @@ class EvaluacionEspecialistasController extends ActiveRecord
                 'data' => $data,
                 'total' => count($data)
             ]);
-
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -109,7 +108,6 @@ class EvaluacionEspecialistasController extends ActiveRecord
                 'mensaje' => 'Grados obtenidos correctamente',
                 'data' => $grados
             ]);
-            
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
@@ -120,12 +118,3 @@ class EvaluacionEspecialistasController extends ActiveRecord
         }
     }
 }
-
-
-
-
-
-
-
-
-

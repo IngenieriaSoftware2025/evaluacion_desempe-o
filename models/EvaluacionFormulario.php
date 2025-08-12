@@ -1,22 +1,24 @@
 <?php
 
 namespace Model;
+
 use Model\ActiveRecord;
 
-class EvaluacionFormulario extends ActiveRecord {
-    
+class EvaluacionFormulario extends ActiveRecord
+{
+
     public static $tabla = 'eva_boleta';
     public static $idTabla = 'bol_cat_evaluado';
-    public static $columnasDB = 
+    public static $columnasDB =
     [
         'bol_cat_evaluado',
-        'bol_anio', 
+        'bol_anio',
         'bol_cat_evaluador',
         'bol_ceom',
         'bol_perfil',
         'bol_pafe',
         'bol_eva1',
-        'bol_eva2', 
+        'bol_eva2',
         'bol_eva3',
         'bol_eva4',
         'bol_demeritos',
@@ -30,7 +32,7 @@ class EvaluacionFormulario extends ActiveRecord {
         'bol_cat_comte',
         'bol_obs'
     ];
-    
+
     public $bol_cat_evaluado;
     public $bol_anio;
     public $bol_cat_evaluador;
@@ -51,7 +53,7 @@ class EvaluacionFormulario extends ActiveRecord {
     public $bol_cat_g1;
     public $bol_cat_comte;
     public $bol_obs;
-    
+
     public function __construct($evaluacion = [])
     {
         $this->bol_cat_evaluado = $evaluacion['bol_cat_evaluado'] ?? null;
