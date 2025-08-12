@@ -86,15 +86,16 @@ class EvaluacionFormularioController extends ActiveRecord
             $sql = "SELECT 
                         p.per_catalogo as catalogo,
                         p.per_nom1, p.per_nom2, p.per_ape1, p.per_ape2,
-                        g.gra_desc_md as grado,
+                        g.gra_desc_ct || ' DE ' || a.arm_desc_lg as grado,
                         o.org_plaza_desc as puesto_ocupa,
                         o.org_ceom as ceom,
                         t.t_puesto as tiempo_supervisar_evaluado,
                         2025 as anio_evaluacion
                     FROM mper p
                     INNER JOIN grados g ON p.per_grado = g.gra_codigo
-                    LEFT JOIN morg o ON p.per_plaza = o.org_plaza
-                    LEFT JOIN tiempos t ON p.per_catalogo = t.t_catalogo
+                    INNER JOIN armas a ON p.per_arma = a.arm_codigo
+                    INNER JOIN morg o ON p.per_plaza = o.org_plaza
+                    INNER JOIN tiempos t ON p.per_catalogo = t.t_catalogo
                     WHERE p.per_catalogo = {$catalogo}";
 
             $data = self::fetchArray($sql);
@@ -131,6 +132,80 @@ class EvaluacionFormularioController extends ActiveRecord
             ]);
         }
     }
+
+
+public static function obtenerOficialesValidacionAPI()
+{
+    getHeadersApi();
+    try {
+        $dependencia = filter_var($_GET['dependencia'], FILTER_SANITIZE_NUMBER_INT);
+        
+        if (!$dependencia) {
+            $dependencia = 10030;
+        }
+
+        $sql = "SELECT 
+    p.per_catalogo AS catalogo,
+    g.gra_desc_ct || ' DE ' || a.arm_desc_lg AS arma,
+            p.per_nom1 || '' || p.per_nom2 || '' || p.per_ape1 || '' || p.per_ape2 AS nombre_completo,
+            o.org_plaza_desc AS puesto,
+            d.dep_desc_md AS dependencia
+        FROM mper p
+        JOIN grados g ON p.per_grado = g.gra_codigo
+        JOIN armas a ON p.per_arma = a.arm_codigo
+        JOIN morg o ON p.per_plaza = o.org_plaza
+        JOIN mdep d ON o.org_dependencia = d.dep_llave
+        WHERE o.org_dependencia = {$dependencia}
+            AND p.per_situacion = 11
+            AND g.gra_clase = 1
+            AND (o.org_plaza_desc LIKE '%PERSONAL%' OR o.org_plaza_desc = 'COMANDANTE')
+        ORDER BY o.org_plaza_desc";
+
+        $data = self::fetchArray($sql);
+
+        if (empty($data)) {
+            http_response_code(404);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'No se encontraron oficiales para validación'
+            ]);
+            return;
+        }
+
+        // Separar oficiales por tipo
+        $oficialPersonal = null;
+        $comandante = null;
+
+        foreach ($data as $oficial) {
+            if (stripos($oficial['puesto'], 'PERSONAL') !== false) {
+                $oficialPersonal = $oficial;
+            } elseif (stripos($oficial['puesto'], 'COMANDANTE') !== false) {
+                $comandante = $oficial;
+            }
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'codigo' => 1,
+            'mensaje' => 'Oficiales de validación obtenidos correctamente',
+            'data' => [
+                'oficial_personal' => $oficialPersonal,
+                'comandante' => $comandante
+            ]
+        ]);
+    } catch (Exception $e) {
+        http_response_code(400);
+        echo json_encode([
+            'codigo' => 0,
+            'mensaje' => 'Error al obtener oficiales de validación',
+            'detalle' => $e->getMessage()
+        ]);
+    }
+}
+
+
+
+
 
     public static function validarTiempoEvaluadorAPI()
     {

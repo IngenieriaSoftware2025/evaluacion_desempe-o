@@ -390,6 +390,143 @@ const cargarAccionesCorrectivas = async () => {
   }
 };
 
+
+// CARGAR OFICIALES DE VALIDACIÓN
+const cargarOficialesValidacion = async () => {
+  try {
+    const url = "/evaluacion_desempeno/API/evaluacionformulario/obtenerOficialesValidacion?dependencia=10030";
+    const respuesta = await fetch(url, { method: "GET" });
+    const datos = await respuesta.json();
+
+    if (datos.codigo === 1) {
+      const { oficial_personal, comandante } = datos.data;
+      
+      // Mostrar datos del Oficial de Personal
+      if (oficial_personal) {
+        const oficialesPersonalContainer = document.getElementById("oficial_personal_container");
+        if (oficialesPersonalContainer) {
+          oficialesPersonalContainer.innerHTML = `
+            <div class="text-center">
+              <strong>${oficial_personal.nombre_completo}</strong><br>
+              <span>${oficial_personal.arma}</span>
+            </div>
+          `;
+        }
+      }
+
+      // Mostrar datos del Comandante
+      if (comandante) {
+        const comandanteContainer = document.getElementById("comandante_container");
+        if (comandanteContainer) {
+          comandanteContainer.innerHTML = `
+            <div class="text-center">
+              <strong>${comandante.nombre_completo}</strong><br>
+              <span>${comandante.arma}</span>
+            </div>
+          `;
+        }
+      }
+
+      console.log("Oficiales de validación cargados correctamente");
+    } else {
+      console.log("No se encontraron oficiales de validación");
+    }
+  } catch (error) {
+    console.error("Error al cargar oficiales de validación:", error);
+  }
+};
+
+
+// MOSTRAR DATOS DE VALIDACIÓN DEL EVALUADO Y EVALUADOR  
+const mostrarDatosValidacion = () => {
+    // Intentar obtener datos del evaluado desde sessionStorage (página 1)
+    const datosEvaluado = sessionStorage.getItem('datosEvaluado');
+    const datosEvaluador = sessionStorage.getItem('datosEvaluador');
+    
+    // Mostrar datos del evaluado si están disponibles
+    if (datosEvaluado) {
+        try {
+            const evaluado = JSON.parse(datosEvaluado);
+            const nombreCompleto = `${evaluado.per_nom1 || ''} ${evaluado.per_nom2 || ''} ${evaluado.per_ape1 || ''} ${evaluado.per_ape2 || ''}`.trim();
+            
+            const evaluadoContainer = document.getElementById("evaluado_nombre_validacion");
+            if (evaluadoContainer) {
+                evaluadoContainer.innerHTML = `
+                    <div class="text-center">
+                        <strong>${nombreCompleto}</strong><br>
+                        <span>${evaluado.grado || ''}</span>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error("Error al parsear datos del evaluado:", error);
+        }
+    } else {
+        // Si no hay datos en sessionStorage, cargar desde la URL
+        const catalogoEvaluado = new URLSearchParams(location.search).get("catalogo");
+        if (catalogoEvaluado) {
+            cargarDatosEvaluadoValidacion(catalogoEvaluado);
+        }
+    }
+    
+    // Mostrar datos del evaluador si están disponibles
+    if (datosEvaluador) {
+        try {
+            const evaluador = JSON.parse(datosEvaluador);
+            const nombreCompleto = `${evaluador.per_nom1 || ''} ${evaluador.per_nom2 || ''} ${evaluador.per_ape1 || ''} ${evaluador.per_ape2 || ''}`.trim();
+            
+            const evaluadorContainer = document.getElementById("evaluador_nombre_validacion");
+            if (evaluadorContainer) {
+                evaluadorContainer.innerHTML = `
+                    <div class="text-center">
+                        <strong>${nombreCompleto}</strong><br>
+                        <span>${evaluador.grado || ''}</span>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error("Error al parsear datos del evaluador:", error);
+        }
+    } else {
+        // Placeholder si no hay datos del evaluador
+        const evaluadorContainer = document.getElementById("evaluador_nombre_validacion");
+        if (evaluadorContainer) {
+            evaluadorContainer.innerHTML = `
+                <div class="text-center text-muted">
+                    <small>Se completará con datos del evaluador</small>
+                </div>
+            `;
+        }
+    }
+};
+
+// CARGAR DATOS DEL EVALUADO PARA VALIDACIÓN
+const cargarDatosEvaluadoValidacion = async (catalogo) => {
+    try {
+        const url = `/evaluacion_desempeno/API/evaluacionformulario/obtenerDatosEvaluado?catalogo=${catalogo}`;
+        const respuesta = await fetch(url, { method: "GET" });
+        const datos = await respuesta.json();
+
+        if (datos.codigo === 1) {
+            const evaluado = datos.data;
+            const nombreCompleto = `${evaluado.per_nom1 || ''} ${evaluado.per_nom2 || ''} ${evaluado.per_ape1 || ''} ${evaluado.per_ape2 || ''}`.trim();
+            
+            const evaluadoContainer = document.getElementById("evaluado_nombre_validacion");
+            if (evaluadoContainer) {
+                evaluadoContainer.innerHTML = `
+                    <div class="text-center">
+                        <strong>${nombreCompleto}</strong><br>
+                        <span>${evaluado.grado || ''}</span>
+                    </div>
+                `;
+            }
+        }
+    } catch (error) {
+        console.error("Error al cargar datos del evaluado para validación:", error);
+    }
+};
+
+
 // FUNCIÓN PARA ACTUALIZAR SECCIÓN V - CATEGORÍA
 const actualizarSeccionCategoria = (
   totalSalud,
@@ -455,6 +592,8 @@ const manejarObservaciones = () => {
 CargarPreguntasConceptualizacion();
 cargarAccionesMotivadoras();
 cargarAccionesCorrectivas();
+cargarOficialesValidacion();
+mostrarDatosValidacion();
 
 // EVENT LISTENERS
 accionMotivadora.addEventListener('change', manejarAccionMotivadora);

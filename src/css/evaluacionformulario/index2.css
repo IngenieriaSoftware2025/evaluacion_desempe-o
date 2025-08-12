@@ -541,4 +541,26 @@
     font-size: 1rem;
     padding: 0.5rem 1.5rem;
   }
+  /* Estilos para la sección de validación */
+.validation-section {
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.signature-line {
+    border-bottom: 2px solid #6c757d;
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+.evaluador-info, .evaluado-info, .oficial-info, .comandante-info {
+    font-size: 12px;
+    color: #495057;
+}
 }

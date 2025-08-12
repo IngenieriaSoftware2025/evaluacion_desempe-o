@@ -223,6 +223,69 @@
         </div>
     </div>
 
+
+<!-- Sección IX: VALIDACIÓN -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card main-card">
+                <div class="card-header bg-warning text-dark text-center">
+                    <div class="evaluation-icon">
+                        <i class="bi bi-pen"></i>
+                    </div>
+                    <h4 class="mb-0 header-title">IX. VALIDACIÓN</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <!-- Firma del Evaluador -->
+                        <div class="col-md-3">
+                            <div class="validation-section">
+                                <div class="signature-line mb-2"></div>
+                                <p class="mb-1"><strong>Firma del Evaluador</strong></p>
+                                <div id="evaluador_nombre_validacion" class="evaluador-info">
+                                    <!-- Se llenará automáticamente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Firma del Evaluado -->
+                        <div class="col-md-3">
+                            <div class="validation-section">
+                                <div class="signature-line mb-2"></div>
+                                <p class="mb-1"><strong>Firma del Evaluado</strong></p>
+                                <div id="evaluado_nombre_validacion" class="evaluado-info">
+                                    <!-- Se llenará automáticamente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Firma Oficial de Personal -->
+                        <div class="col-md-3">
+                            <div class="validation-section">
+                                <div class="signature-line mb-2"></div>
+                                <p class="mb-1"><strong>Firma Oficial de Personal</strong></p>
+                                <div id="oficial_personal_container" class="oficial-info">
+                                    <div class="text-muted">Cargando...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Firma del Comandante -->
+                        <div class="col-md-3">
+                            <div class="validation-section">
+                                <div class="signature-line mb-2"></div>
+                                <p class="mb-1"><strong>Firma del Comandante</strong></p>
+                                <div id="comandante_container" class="comandante-info">
+                                    <div class="text-muted">Cargando...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- BOTONES DE NAVEGACIÓN -->
     <div class="row mt-4 mb-5">
         <div class="col-12">

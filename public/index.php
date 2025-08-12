@@ -29,6 +29,8 @@ $router->get('/ingresar-datos', [EvaluacionFormularioController::class, 'renderi
 $router->get('/API/evaluacionformulario/obtenerDatosEvaluado', [EvaluacionFormularioController::class, 'obtenerDatosEvaluadoAPI']);
 $router->get('/API/evaluacionformulario/obtenerDatosEvaluador', [EvaluacionFormularioController::class, 'obtenerDatosEvaluadorAPI']);
 $router->get('/API/evaluacionformulario/validarTiempoEvaluador', [EvaluacionFormularioController::class, 'validarTiempoEvaluadorAPI']);
+// VALIDACION OFICIAL
+$router->get('/API/evaluacionformulario/obtenerOficialesValidacion', [EvaluacionFormularioController::class, 'obtenerOficialesValidacionAPI']);
 $router->post('/API/evaluacionformulario/guardar', [EvaluacionFormularioController::class, 'guardarEvaluacionAPI']);
 $router->get('/API/evaluacionformulario/eliminar', [EvaluacionFormularioController::class, 'eliminarEvaluacionAPI']);
 $router->get('/API/evaluacionformulario/obtenerPafesEvaluado', [EvaluacionFormularioController::class, 'obtenerPafesEvaluadoAPI']);

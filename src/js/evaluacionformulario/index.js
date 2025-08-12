@@ -100,6 +100,8 @@ const CargarDatosEvaluado = async () => {
     const { codigo, mensaje, data } = datos;
 
     if (codigo === 1) {
+    // Guardar datos del evaluado en sessionStorage para la página 2  ✅ CORRECTO  
+    sessionStorage.setItem('datosEvaluado', JSON.stringify(data));
       // Llenar campos del evaluado
       evaluadoCatalogo.value = data.catalogo || "";
       evaluadoGrado.value = data.grado || "";
@@ -165,6 +167,8 @@ const CargarDatosEvaluador = async (catalogo) => {
     const { codigo, mensaje, data } = datos;
 
     if (codigo === 1) {
+      // Guardar datos del evaluador en sessionStorage para la página 2
+sessionStorage.setItem('datosEvaluador', JSON.stringify(data));
       // Llenar campos del evaluador
       evaluadorGrado.value = data.grado || "";
       evaluadorNom1.value = data.per_nom1 || "";
