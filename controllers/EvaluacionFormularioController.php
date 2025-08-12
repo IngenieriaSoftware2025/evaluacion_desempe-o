@@ -86,7 +86,7 @@ class EvaluacionFormularioController extends ActiveRecord
             $sql = "SELECT 
                         p.per_catalogo as catalogo,
                         p.per_nom1, p.per_nom2, p.per_ape1, p.per_ape2,
-                        g.gra_desc_ct || ' DE ' || a.arm_desc_lg as grado,
+                        g.gra_desc_ct || ' DE ' || a.arm_desc_ct as grado,
                         o.org_plaza_desc as puesto_ocupa,
                         o.org_ceom as ceom,
                         t.t_puesto as tiempo_supervisar_evaluado,
